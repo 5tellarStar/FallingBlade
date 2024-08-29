@@ -4,6 +4,8 @@
 int main()
 {
     auto window = sf::RenderWindow{ { 512u, 128u }, "Fighter" };
+
+    sf::View veiw = window.getDefaultView();
     window.setFramerateLimit(144);
     sf::RectangleShape background(sf::Vector2f(512, 128));
     background.setFillColor(sf::Color::White);
@@ -17,7 +19,8 @@ int main()
             }
             if (event.type == sf::Event::Resized)
             {
-                window.setSize(sf::Vector2u(512, 512 * event.size.width / event.size.height));
+                veiw.setSize(sf::Vector2f(512,512* event.size.height / event.size.width));
+                window.setView(veiw);
             }
         }
         window.clear();
