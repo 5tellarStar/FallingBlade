@@ -1,9 +1,15 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+#include "baseCharacter.hpp"
+
+bool battling = false;
+
 int main()
 {
     auto window = sf::RenderWindow{ { 512u, 128u }, "Fighter" };
+    BaseCharacter player1(false);
+    BaseCharacter player2(true);
 
     sf::View veiw = window.getDefaultView();
     window.setFramerateLimit(144);
@@ -19,12 +25,14 @@ int main()
             }
             if (event.type == sf::Event::Resized)
             {
-                veiw.setSize(sf::Vector2f(512,512* event.size.height / event.size.width));
+                veiw.setSize(sf::Vector2f(512,512 * event.size.height / event.size.width));
                 window.setView(veiw);
             }
         }
         window.clear();
         window.draw(background);
+        window.draw(player1.sprite);
+        window.draw(player2.sprite);
         window.display();
     }
 }
