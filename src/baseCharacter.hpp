@@ -16,13 +16,24 @@ public:
 	int inputHorizontal;
 	int inputVertical;
 
-	int inputAction;
+	bool inputAttack;
+	bool inputDodge;
+	bool inputSkill;
+
+	bool canWalk = true;
+
+	float velocity;
+
+	float walkSpeed = 1;
+	float walkSpeedMax = 5;
 
 	sf::RectangleShape sprite;
 
 	BaseCharacter(bool player2)
 	{
+
 		sprite.setSize(sf::Vector2f(32, 64));
+
 		if (!player2)
 		{
 			up = sf::Keyboard::W;
@@ -50,7 +61,49 @@ public:
 	}
 	void input()
 	{
-	
+		if (sf::Keyboard::isKeyPressed(up) && ! sf::Keyboard::isKeyPressed(down))
+		{
+			inputVertical = 1;
+		}
+		else if(sf::Keyboard::isKeyPressed(down) && sf::Keyboard::isKeyPressed(up))
+		{
+			inputVertical = -1;
+		}
+		else
+		{
+			inputVertical = 0;
+		}
+
+		if (sf::Keyboard::isKeyPressed(right) && !sf::Keyboard::isKeyPressed(left))
+		{
+			inputHorizontal = 1;
+		}
+		else if (sf::Keyboard::isKeyPressed(left) && sf::Keyboard::isKeyPressed(right))
+		{
+			inputHorizontal = -1;
+		}
+		else
+		{
+			inputHorizontal = 0;
+		}
+
+		inputAttack = sf::Keyboard::isKeyPressed(attack);
+		inputDodge = sf::Keyboard::isKeyPressed(dodge);
+		inputSkill = sf::Keyboard::isKeyPressed(skill);
+	}
+
+	void tick()
+	{
+		if (canWalk)
+		{
+			if (inputHorizontal = 1)
+			{
+				if (velocity < walkSpeedMax)
+				{
+					velocity += walkSpeed;
+				}
+			}
+		}
 	}
 
 
