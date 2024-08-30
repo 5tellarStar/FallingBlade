@@ -11,6 +11,8 @@ int main()
     BaseCharacter player1(false);
     BaseCharacter player2(true);
 
+    sf::Clock globalTime;
+
     sf::View veiw = window.getDefaultView();
     window.setFramerateLimit(144);
     sf::RectangleShape background(sf::Vector2f(512, 128));
@@ -29,6 +31,16 @@ int main()
                 window.setView(veiw);
             }
         }
+        player1.input();
+        player2.input();
+
+        if (globalTime.getElapsedTime().asSeconds() > 0.05f)
+        {
+            player1.tick();
+            player2.tick();
+            globalTime.restart();
+        }
+
         window.clear();
         window.draw(background);
         window.draw(player1.sprite);

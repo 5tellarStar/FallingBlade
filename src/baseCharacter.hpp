@@ -13,19 +13,22 @@ public:
 	sf::Keyboard::Key dodge;
 	sf::Keyboard::Key skill;
 
-	int inputHorizontal;
-	int inputVertical;
+	int inputHorizontal = 0;
+	int inputVertical = 0;
 
-	bool inputAttack;
-	bool inputDodge;
-	bool inputSkill;
+	bool inputAttack = false;
+	bool inputDodge = false;
+	bool inputSkill = false;
 
 	bool canWalk = true;
 
-	float velocity;
+	float velocity = 0;
 
-	float walkSpeed = 1;
-	float walkSpeedMax = 5;
+	float position;
+
+	float walkSpeed = 2;
+	float walkSpeedMax = 50;
+	float friction = 1;
 
 	sf::RectangleShape sprite;
 
@@ -43,8 +46,8 @@ public:
 			attack = sf::Keyboard::U;
 			dodge = sf::Keyboard::I;
 			skill = sf::Keyboard::O;
-			sprite.setFillColor(sf::Color::Blue);
-			sprite.setPosition(sf::Vector2f(96, 64));
+			sprite.setFillColor(sf::Color::Blue);	
+			position = 96;
 		}
 		else
 		{
@@ -56,8 +59,9 @@ public:
 			dodge = sf::Keyboard::Numpad8;
 			skill = sf::Keyboard::Numpad9;
 			sprite.setFillColor(sf::Color::Red);
-			sprite.setPosition(sf::Vector2f(384, 64));
+			position = 384;
 		}
+		sprite.setPosition(sf::Vector2f(position, 64));
 	}
 	void input()
 	{
@@ -77,8 +81,10 @@ public:
 		if (sf::Keyboard::isKeyPressed(right) && !sf::Keyboard::isKeyPressed(left))
 		{
 			inputHorizontal = 1;
+
+
 		}
-		else if (sf::Keyboard::isKeyPressed(left) && sf::Keyboard::isKeyPressed(right))
+		else if (sf::Keyboard::isKeyPressed(left) && !sf::Keyboard::isKeyPressed(right))
 		{
 			inputHorizontal = -1;
 		}
@@ -96,12 +102,39 @@ public:
 	{
 		if (canWalk)
 		{
-			if (inputHorizontal = 1)
+			if (inputHorizontal == 1)
 			{
 				if (velocity < walkSpeedMax)
 				{
 					velocity += walkSpeed;
 				}
+			}
+			if (inputHorizontal == -1)
+			{
+				if (velocity > -walkSpeedMax)
+				{
+					velocity -= walkSpeed;
+				}
+			}
+		}
+
+		position += velocity;
+		sprite.setPosition(sf::Vector2f(position, 64));
+
+		if (velocity < 0)
+		{
+			velocity += friction;
+			if (velocity > 0)
+			{
+				velocity = 0;
+			}
+		}
+		else if (velocity >= 0)
+		{
+			velocity -= friction;
+			if (velocity <= 0)
+			{
+				velocity = 0;
 			}
 		}
 	}
