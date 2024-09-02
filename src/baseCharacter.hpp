@@ -32,9 +32,16 @@ public:
 
 	sf::RectangleShape sprite;
 
+	bool canDodge = true;
 	int isDodging = 0;
 	float dodgeSpeed = 7;
-	int dodgeFrames = 4;
+
+	int dodgeFrames = 6;
+	int dodgeFrame = 0;
+
+	bool canAttack = true;
+	bool charging = false;
+	int charge = 0;
 
 	BaseCharacter(bool player2)
 	{
@@ -102,11 +109,21 @@ public:
 
 	void tick()
 	{
+		if (inputAttack)
+		{
+			if (!charging)
+			{
+
+			}
+		}
+
+
 		if (inputDodge) 
 		{
-			if (isDodging == 0)
+			if (isDodging == 0 && canDodge)
 			{
 				canWalk = false;
+				canDodge = false;
 				if (inputVertical == 1)
 				{
 					isDodging = 1;
@@ -116,13 +133,20 @@ public:
 					isDodging = -1;
 				}
 				velocity += dodgeSpeed * inputHorizontal;
+				dodgeFrame = 0;
 			}
+			dodgeFrame++;
 		}
-		else if (isDodging != 0)
+		else if (isDodging != 0 && dodgeFrame > dodgeFrames)
 		{
 
 			isDodging = 0;
 			canWalk = true;
+			canDodge = true;
+		}
+		else
+		{
+			dodgeFrame++;
 		}
 
 		if (canWalk)
