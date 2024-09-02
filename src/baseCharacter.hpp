@@ -41,7 +41,12 @@ public:
 
 	bool canAttack = true;
 	bool charging = false;
+	bool attacking = false;
+	int AttackFrames = 8;
+	int AttackCancelableFrames = 4;
+	int attackFrame = 0;
 	int charge = 0;
+	int maxCharge = 10;
 
 	BaseCharacter(bool player2)
 	{
@@ -113,15 +118,43 @@ public:
 		{
 			if (!charging)
 			{
-
+				charging = true;
+				canWalk = false;
+			}
+			if (charging && charge < maxCharge)
+			{
+				charge++;
 			}
 		}
+		else if (charging)
+		{
+			attacking = true;
+			charging = false;
+			velocity += charge * inputHorizontal;
+			attackFrame = 0;
+		}
 
+		if (attackFrame < AttackFrames)
+		{
+			if (attackFrame == AttackCancelableFrames)
+			{
+				canDodge = false;
+			}
+			attackFrame++;
+		}
+		else if(attacking)
+		{
+			attacking = false;
+			canAttack = true;
+			canWalk = true;
+			canDodge = true;
+		}
 
 		if (inputDodge) 
 		{
 			if (isDodging == 0 && canDodge)
 			{
+				charge = 0;
 				canWalk = false;
 				canDodge = false;
 				if (inputVertical == 1)
@@ -139,7 +172,6 @@ public:
 		}
 		else if (isDodging != 0 && dodgeFrame > dodgeFrames)
 		{
-
 			isDodging = 0;
 			canWalk = true;
 			canDodge = true;
