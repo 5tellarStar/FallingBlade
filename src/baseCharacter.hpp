@@ -27,10 +27,14 @@ public:
 	float position;
 
 	float walkSpeed = 2;
-	float walkSpeedMax = 50;
+	float walkSpeedMax = 5;
 	float friction = 1;
 
 	sf::RectangleShape sprite;
+
+	int isDodging = 0;
+	float dodgeSpeed = 7;
+	int dodgeFrames = 4;
 
 	BaseCharacter(bool player2)
 	{
@@ -81,8 +85,6 @@ public:
 		if (sf::Keyboard::isKeyPressed(right) && !sf::Keyboard::isKeyPressed(left))
 		{
 			inputHorizontal = 1;
-
-
 		}
 		else if (sf::Keyboard::isKeyPressed(left) && !sf::Keyboard::isKeyPressed(right))
 		{
@@ -100,6 +102,29 @@ public:
 
 	void tick()
 	{
+		if (inputDodge) 
+		{
+			if (isDodging == 0)
+			{
+				canWalk = false;
+				if (inputVertical == 1)
+				{
+					isDodging = 1;
+				}
+				else
+				{
+					isDodging = -1;
+				}
+				velocity += dodgeSpeed * inputHorizontal;
+			}
+		}
+		else if (isDodging != 0)
+		{
+
+			isDodging = 0;
+			canWalk = true;
+		}
+
 		if (canWalk)
 		{
 			if (inputHorizontal == 1)

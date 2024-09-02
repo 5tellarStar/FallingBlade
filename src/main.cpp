@@ -34,7 +34,7 @@ int main()
         player1.input();
         player2.input();
 
-        if (globalTime.getElapsedTime().asSeconds() > 0.05f)
+        if (globalTime.getElapsedTime().asSeconds() > (1.f/24.f))
         {
             player1.tick();
             player2.tick();
