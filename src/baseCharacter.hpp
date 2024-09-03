@@ -13,6 +13,8 @@ public:
 	sf::Keyboard::Key dodge;
 	sf::Keyboard::Key skill;
 
+	int direction;
+
 	int inputHorizontal = 0;
 	int inputVertical = 0;
 
@@ -20,17 +22,19 @@ public:
 	bool inputDodge = false;
 	bool inputSkill = false;
 
-	bool canWalk = true;
 
 	float velocity = 0;
 
 	float position;
+	float width = 32;
 
+	bool canWalk = true;
 	float walkSpeed = 2;
 	float walkSpeedMax = 5;
 	float friction = 1;
 
 	sf::RectangleShape sprite;
+	sf::RectangleShape sword;
 
 	bool canDodge = true;
 	int isDodging = 0;
@@ -48,10 +52,17 @@ public:
 	int charge = 0;
 	int maxCharge = 10;
 
+	int firstActiveAttackFrame = 5;
+
+	float highAttackRange = 32;
+	float attackRange = 32;
+	float lowAttackRange = 32;
+
 	BaseCharacter(bool player2)
 	{
 
 		sprite.setSize(sf::Vector2f(32, 64));
+
 
 		if (!player2)
 		{
@@ -63,7 +74,8 @@ public:
 			dodge = sf::Keyboard::I;
 			skill = sf::Keyboard::O;
 			sprite.setFillColor(sf::Color::Blue);	
-			position = 96;
+			SetPosition(96);
+			direction = 1;
 		}
 		else
 		{
@@ -75,9 +87,9 @@ public:
 			dodge = sf::Keyboard::Numpad8;
 			skill = sf::Keyboard::Numpad9;
 			sprite.setFillColor(sf::Color::Red);
-			position = 384;
+			SetPosition(384);
+			direction = -1;
 		}
-		sprite.setPosition(sf::Vector2f(position, 64));
 	}
 	void input()
 	{
@@ -111,6 +123,11 @@ public:
 		inputDodge = sf::Keyboard::isKeyPressed(dodge);
 		inputSkill = sf::Keyboard::isKeyPressed(skill);
 	}
+	void SetPosition(float pos)
+	{
+		position = pos;
+		sprite.setPosition(sf::Vector2f(pos, 64));
+	}
 
 	void tick()
 	{
@@ -134,11 +151,15 @@ public:
 			attackFrame = 0;
 		}
 
-		if (attackFrame < AttackFrames)
+		if (attacking && attackFrame < AttackFrames)
 		{
 			if (attackFrame == AttackCancelableFrames)
 			{
 				canDodge = false;
+			}
+			if (attackFrame > firstActiveAttackFrame)
+			{
+
 			}
 			attackFrame++;
 		}
@@ -199,8 +220,7 @@ public:
 			}
 		}
 
-		position += velocity;
-		sprite.setPosition(sf::Vector2f(position, 64));
+		SetPosition(position + velocity);
 
 		if (velocity < 0)
 		{
