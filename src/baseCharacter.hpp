@@ -52,8 +52,13 @@ public:
 	int charge = 0;
 	int maxCharge = 10;
 
+	float staminaUse = 0.5f;
+	float staminaRegain = 0.1f;
+	float exhaustion = 0;
+
 	int firstActiveAttackFrame = 5;
 
+	int hitboxActive = 0;
 	float highAttackRange = 32;
 	float attackRange = 32;
 	float lowAttackRange = 32;
@@ -133,10 +138,12 @@ public:
 	{
 		if (inputAttack)
 		{
-			if (!charging)
+			if (!charging && canAttack)
 			{
 				charging = true;
 				canWalk = false;
+				canAttack = false;
+				sprite.setFillColor(sf::Color::Red);
 			}
 			if (charging && charge < maxCharge)
 			{
@@ -148,6 +155,7 @@ public:
 			attacking = true;
 			charging = false;
 			velocity += charge * inputHorizontal;
+			charge = 0;
 			attackFrame = 0;
 		}
 
@@ -157,18 +165,26 @@ public:
 			{
 				canDodge = false;
 			}
-			if (attackFrame > firstActiveAttackFrame)
+			if (attackFrame == firstActiveAttackFrame)
 			{
-
+				sprite.setFillColor(sf::Color::Yellow);
+				hitboxActive = inputVertical + 2;
 			}
 			attackFrame++;
 		}
+		else if (attacking && attackFrame < exhaustion)
+		{
+			attackFrame++;
+			sprite.setFillColor(sf::Color::Blue);
+		}
 		else if(attacking)
 		{
+			sprite.setFillColor(sf::Color::Blue);
 			attacking = false;
 			canAttack = true;
 			canWalk = true;
 			canDodge = true;
+			exhaustion += staminaUse;
 		}
 
 		if (inputDodge) 
