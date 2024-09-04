@@ -39,16 +39,60 @@ int main()
             player1.tick();
             player2.tick();
             globalTime.restart();
-            if (player1.hitboxActive != 0 && player2.hitboxActive == 0)
+            bool p1Hitp2 = player1.hitboxActive != 0 && 
+                (
+                    (
+                        player1.direction == -1 &&
+                        (
+                            (player2.position - player2.width < player1.position && player2.position - player2.width > player1.position - player1.attackRange) ||
+                            (player2.position + player2.width < player1.position && player2.position + player2.width > player1.position - player1.attackRange)
+                        )
+                    ) ||
+                    (
+                        player1.direction == 1 &&
+                        (
+                            (player2.position - player2.width > player1.position && player2.position - player2.width < player1.position + player1.attackRange) ||
+                            (player2.position + player2.width > player1.position && player2.position + player2.width < player1.position + player1.attackRange)
+                        )
+                    ) ||
+                    (player2.position - player2.width < player1.position && player2.position + player2.width > player1.position)
+                );
+
+            bool p2Hitp1 = player2.hitboxActive != 0 &&
+                (
+                    (
+                        player2.direction == -1 &&
+                        (
+                            (player1.position - player1.width < player2.position && player1.position - player1.width > player2.position - player2.attackRange) ||
+                            (player1.position + player1.width < player2.position && player1.position + player1.width > player2.position - player2.attackRange)
+                        )
+                    ) ||
+                    (
+                        player2.direction == 1 && 
+                        (
+                            (player1.position - player1.width > player2.position && player1.position - player1.width < player2.position + player2.attackRange) ||
+                            (player1.position + player1.width > player2.position && player1.position + player1.width < player2.position + player2.attackRange)
+                        )
+                     ) ||
+                    (player2.position - player2.width < player1.position && player2.position + player2.width > player1.position)
+                );
+
+            bool swordHit = player1.hitboxActive != 0 && player2.hitboxActive != 0 &&
+                (
+                    (
+                        player1.direction == 1 && player2.direction == -1 &&
+                        player1.position + player1.attackRange > player2.position - player2.attackRange && player1.position + player1.attackRange < player2.position
+                    )||
+                    (
+                        player1.direction == -1 && player2.direction == 1 &&
+                        player1.position - player1.attackRange < player2.position + player2.attackRange && player1.position + player1.attackRange > player2.position
+                    )
+
+                );
+
+
+            if (swordHit && !p1Hitp2 && !p2Hitp1)
             {
-                if ((player1.hitboxActive == 1 || player1.hitboxActive == 3) && player2.isDodging != 1 && (player1.position < player2.position - player2.width && player1.position + player1.attackRange > player2.position - player2.width) || (player1.position < player2.position + player2.width && player1.position + player1.attackRange > player2.position + player2.width))
-                {
-
-                }
-                if (player1.hitboxActive == 2 && player2.isDodging != -1)
-                {
-
-                }
             }
         }
 

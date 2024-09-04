@@ -24,6 +24,7 @@ public:
 
 
 	float velocity = 0;
+	float mass = 1;
 
 	float position;
 	float width = 16;
@@ -34,11 +35,10 @@ public:
 	float friction = 1;
 
 	sf::RectangleShape sprite;
-	sf::RectangleShape sword;
 
 	bool canDodge = true;
 	int isDodging = 0;
-	float dodgeSpeed = 7;
+	float dodgeForce = 7;
 
 	int dodgeFrames = 6;
 	int dodgeFrame = 0;
@@ -49,8 +49,9 @@ public:
 	int AttackFrames = 8;
 	int AttackCancelableFrames = 4;
 	int attackFrame = 0;
-	int charge = 0;
-	int maxCharge = 10;
+	float charge = 0;
+	float chargeSpeed = 1;
+	float maxCharge = 10;
 
 	float staminaUse = 0.5f;
 	float staminaRegain = 0.1f;
@@ -58,6 +59,7 @@ public:
 
 	int firstActiveAttackFrame = 5;
 
+	float attackVelocity = 3;
 	int hitboxActive = 0;
 	float highAttackRange = 32;
 	float attackRange = 32;
@@ -96,6 +98,7 @@ public:
 			direction = -1;
 		}
 	}
+
 	void input()
 	{
 		if (sf::Keyboard::isKeyPressed(up) && ! sf::Keyboard::isKeyPressed(down))
@@ -133,6 +136,10 @@ public:
 		position = pos;
 		sprite.setPosition(sf::Vector2f(pos - width, 64));
 	}
+	void AddForce(float force)
+	{
+		velocity += force / mass;
+	}
 
 	void tick()
 	{
@@ -141,20 +148,20 @@ public:
 			if (!charging && canAttack)
 			{
 				charging = true;
-				canWalk = false;
 				canAttack = false;
 				sprite.setFillColor(sf::Color::Red);
 			}
 			if (charging && charge < maxCharge)
 			{
-				charge++;
+				charge += chargeSpeed;
 			}
 		}
 		else if (charging)
 		{
+			canWalk = false;
 			attacking = true;
 			charging = false;
-			velocity += charge * inputHorizontal;
+			AddForce(charge * inputHorizontal);
 			charge = 0;
 			attackFrame = 0;
 		}
@@ -180,6 +187,7 @@ public:
 		else if(attacking)
 		{
 			sprite.setFillColor(sf::Color::Blue);
+			hitboxActive = 0;
 			attacking = false;
 			canAttack = true;
 			canWalk = true;
@@ -202,7 +210,7 @@ public:
 				{
 					isDodging = -1;
 				}
-				velocity += dodgeSpeed * inputHorizontal;
+				AddForce(dodgeForce * inputHorizontal);
 				dodgeFrame = 0;
 			}
 			dodgeFrame++;
