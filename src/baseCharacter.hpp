@@ -14,6 +14,7 @@ public:
 	sf::Keyboard::Key skill;
 
 	int direction;
+	bool canTurn = true;
 
 	int inputHorizontal = 0;
 	int inputVertical = 0;
@@ -35,6 +36,9 @@ public:
 	float friction = 1;
 
 	sf::RectangleShape sprite;
+
+	bool canBlock = true;
+	int blocking = 0;
 
 	bool canDodge = true;
 	int isDodging = 0;
@@ -143,12 +147,16 @@ public:
 
 	void tick()
 	{
+		blocking = inputVertical;
+
 		if (inputAttack)
 		{
 			if (!charging && canAttack)
 			{
+				canBlock = false;
 				charging = true;
 				canAttack = false;
+				canTurn = false;
 				sprite.setFillColor(sf::Color::Red);
 			}
 			if (charging && charge < maxCharge)
@@ -192,6 +200,8 @@ public:
 			canAttack = true;
 			canWalk = true;
 			canDodge = true;
+			canBlock = true;
+			canTurn = true;
 			exhaustion += staminaUse;
 		}
 
@@ -202,9 +212,11 @@ public:
 				charge = 0;
 				canWalk = false;
 				canDodge = false;
+				canTurn = false;
 				if (inputVertical == 1)
 				{
 					isDodging = 1;
+					canBlock = false;
 				}
 				else
 				{
@@ -220,6 +232,8 @@ public:
 			isDodging = 0;
 			canWalk = true;
 			canDodge = true;
+			canBlock = true;
+			canTurn = true;
 		}
 		else
 		{

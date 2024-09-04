@@ -38,6 +38,28 @@ int main()
         {
             player1.tick();
             player2.tick();
+            if (player1.canTurn)
+            {
+                if (player1.position < player2.position)
+                {
+                    player1.direction = 1;
+                }
+                else
+                {
+                    player1.direction = -1;
+                }
+            }
+            if (player2.canTurn)
+            {
+                if (player2.position < player1.position)
+                {
+                    player2.direction = 1;
+                }
+                else
+                {
+                    player2.direction = -1;
+                }
+            }
             globalTime.restart();
             bool p1Hitp2 = player1.hitboxActive != 0 && 
                 (
@@ -91,8 +113,21 @@ int main()
                 );
 
 
-            if (swordHit && !p1Hitp2 && !p2Hitp1)
+            if (p1Hitp2 && !p2Hitp1 && !swordHit)
             {
+                if (((player1.hitboxActive == 1 || player1.hitboxActive == 3) && player2.isDodging == -1) || (player1.hitboxActive == 2 && player2.isDodging == 1) || player2.isDodging == 0)
+                {
+                    player2.sprite.setFillColor(sf::Color::Green);
+                    if (player1.hitboxActive == 1 && player2.blocking == -1)
+                    {
+                    }
+                    else
+                    {
+                        player2.sprite.setFillColor(sf::Color::Black);
+                        player2.AddForce((player1.velocity + player1.attackVelocity * player1.direction) * player1.mass);
+                        player1.velocity = player1.direction * -1 * player1.attackVelocity/2;
+                    }
+                }
             }
         }
 
