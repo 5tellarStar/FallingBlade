@@ -26,7 +26,7 @@ public:
 	float velocity = 0;
 
 	float position;
-	float width = 32;
+	float width = 16;
 
 	bool canWalk = true;
 	float walkSpeed = 2;
@@ -131,7 +131,7 @@ public:
 	void SetPosition(float pos)
 	{
 		position = pos;
-		sprite.setPosition(sf::Vector2f(pos, 64));
+		sprite.setPosition(sf::Vector2f(pos - width, 64));
 	}
 
 	void tick()

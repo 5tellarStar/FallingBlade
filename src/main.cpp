@@ -39,6 +39,17 @@ int main()
             player1.tick();
             player2.tick();
             globalTime.restart();
+            if (player1.hitboxActive != 0 && player2.hitboxActive == 0)
+            {
+                if ((player1.hitboxActive == 1 || player1.hitboxActive == 3) && player2.isDodging != 1 && (player1.position < player2.position - player2.width && player1.position + player1.attackRange > player2.position - player2.width) || (player1.position < player2.position + player2.width && player1.position + player1.attackRange > player2.position + player2.width))
+                {
+
+                }
+                if (player1.hitboxActive == 2 && player2.isDodging != -1)
+                {
+
+                }
+            }
         }
 
         window.clear();
