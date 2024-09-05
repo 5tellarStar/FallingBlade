@@ -64,7 +64,8 @@ public:
 	int firstActiveAttackFrame = 5;
 
 	float attackVelocity = 3;
-	int hitboxActive = 0;
+	bool hitboxActive = false;
+	int attackState = 0;
 	float highAttackRange = 32;
 	float attackRange = 32;
 	float lowAttackRange = 32;
@@ -105,11 +106,11 @@ public:
 
 	void input()
 	{
-		if (sf::Keyboard::isKeyPressed(up) && ! sf::Keyboard::isKeyPressed(down))
+		if (sf::Keyboard::isKeyPressed(up) && !sf::Keyboard::isKeyPressed(down))
 		{
 			inputVertical = 1;
 		}
-		else if(sf::Keyboard::isKeyPressed(down) && sf::Keyboard::isKeyPressed(up))
+		else if(sf::Keyboard::isKeyPressed(down) && !sf::Keyboard::isKeyPressed(up))
 		{
 			inputVertical = -1;
 		}
@@ -166,6 +167,7 @@ public:
 		}
 		else if (charging)
 		{
+			attackState = inputVertical;
 			canWalk = false;
 			attacking = true;
 			charging = false;
@@ -183,7 +185,7 @@ public:
 			if (attackFrame == firstActiveAttackFrame)
 			{
 				sprite.setFillColor(sf::Color::Yellow);
-				hitboxActive = inputVertical + 2;
+				hitboxActive = true;
 			}
 			attackFrame++;
 		}
