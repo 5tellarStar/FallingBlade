@@ -57,13 +57,13 @@ public:
 	float chargeSpeed = 1;
 	float maxCharge = 10;
 
-	float staminaUse = 0.5f;
+	float staminaUse = 1.f;
 	float staminaRegain = 0.1f;
 	float exhaustion = 0;
 
 	int firstActiveAttackFrame = 5;
 
-	float attackVelocity = 3;
+	float attackVelocity = 7;
 	bool hitboxActive = false;
 	int attackState = 0;
 	float highAttackRange = 32;
@@ -85,7 +85,7 @@ public:
 			attack = sf::Keyboard::U;
 			dodge = sf::Keyboard::I;
 			skill = sf::Keyboard::O;
-			sprite.setFillColor(sf::Color::Blue);	
+			sprite.setFillColor(sf::Color::Blue);
 			SetPosition(96);
 			direction = 1;
 		}
@@ -104,7 +104,7 @@ public:
 		}
 	}
 
-	void input()
+	void Input()
 	{
 		if (sf::Keyboard::isKeyPressed(up) && !sf::Keyboard::isKeyPressed(down))
 		{
@@ -145,9 +145,14 @@ public:
 	{
 		velocity += force / mass;
 	}
-
-	void tick()
+	void Skill()
 	{
+
+	}
+
+	void Tick()
+	{
+		Skill();
 		blocking = inputVertical;
 
 		if (inputAttack)
@@ -215,6 +220,9 @@ public:
 				canWalk = false;
 				canDodge = false;
 				canTurn = false;
+				attacking = false;
+				charging = false;
+				canAttack = false;
 				if (inputVertical == 1)
 				{
 					isDodging = 1;
@@ -236,6 +244,7 @@ public:
 			canDodge = true;
 			canBlock = true;
 			canTurn = true;
+			canAttack = true;
 		}
 		else
 		{
@@ -246,21 +255,46 @@ public:
 		{
 			if (inputHorizontal == 1)
 			{
-				if (velocity < walkSpeedMax)
+				if (!charging)
 				{
-					velocity += walkSpeed;
+					if (velocity < walkSpeedMax)
+					{
+						velocity += walkSpeed;
+					}
+				}
+				else
+				{
+					if (velocity < walkSpeedMax / 2)
+					{
+						velocity += walkSpeed / 2;
+					}
 				}
 			}
 			if (inputHorizontal == -1)
 			{
-				if (velocity > -walkSpeedMax)
+				if (!charging)
 				{
-					velocity -= walkSpeed;
+					if (velocity > -walkSpeedMax)
+					{
+						velocity -= walkSpeed;
+					}
+				}
+				else
+				{
+					if (velocity > -walkSpeedMax / 2)
+					{
+						velocity -= walkSpeed / 2;
+					}
 				}
 			}
 		}
 
 		SetPosition(position + velocity);
+
+		if (exhaustion > 0)
+		{
+			exhaustion -= staminaRegain;
+		}
 
 		if (velocity < 0)
 		{

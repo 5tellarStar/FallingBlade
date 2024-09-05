@@ -3,6 +3,7 @@
 #include <SFML/Window.hpp>
 #include "baseCharacter.hpp"
 
+
 bool battling = false;
 
 int main()
@@ -31,13 +32,13 @@ int main()
                 window.setView(veiw);
             }
         }
-        player1.input();
-        player2.input();
+        player1.Input();
+        player2.Input();
 
         if (globalTime.getElapsedTime().asSeconds() > (1.f/24.f))
         {
-            player1.tick();
-            player2.tick();
+            player1.Tick();
+            player2.Tick();
             float tempVel1 = player1.velocity;
             float tempVel2 = player2.velocity;
             if (player1.canTurn)
