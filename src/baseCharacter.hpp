@@ -40,22 +40,25 @@ public:
 	bool canBlock = true;
 	int blocking = 0;
 
+	
 	bool canDodge = true;
-	int isDodging = 0;
-	float dodgeForce = 7;
+	bool isDodging = false;
+	float dodgeForce = 10;
+	float dodges = 3;
+	float MaxDodges = 3;
+	float dodgeCharge = 0.042f;
 
-	int dodgeFrames = 6;
-	int dodgeFrame = 0;
+
 
 	bool canAttack = true;
-	bool charging = false;
-	bool attacking = false;
+	bool isCharging = false;
+	bool isAttacking = false;
 	int AttackFrames = 8;
 	int AttackCancelableFrames = 4;
 	int attackFrame = 0;
 	float charge = 0;
 	float chargeSpeed = 1;
-	float maxCharge = 10;
+	float maxCharge = 15;
 
 	float staminaUse = 1.f;
 	float staminaRegain = 0.1f;
@@ -157,31 +160,31 @@ public:
 
 		if (inputAttack)
 		{
-			if (!charging && canAttack)
+			if (!isCharging && canAttack)
 			{
 				canBlock = false;
-				charging = true;
+				isCharging = true;
 				canAttack = false;
 				canTurn = false;
 				sprite.setFillColor(sf::Color::Red);
 			}
-			if (charging && charge < maxCharge)
+			if (isCharging && charge < maxCharge)
 			{
 				charge += chargeSpeed;
 			}
 		}
-		else if (charging)
+		else if (isCharging)
 		{
 			attackState = inputVertical;
 			canWalk = false;
-			attacking = true;
-			charging = false;
+			isAttacking = true;
+			isCharging = false;
 			AddForce(charge * inputHorizontal);
 			charge = 0;
 			attackFrame = 0;
 		}
 
-		if (attacking && attackFrame < AttackFrames)
+		if (isAttacking && attackFrame < AttackFrames)
 		{
 			if (attackFrame == AttackCancelableFrames)
 			{
@@ -194,16 +197,16 @@ public:
 			}
 			attackFrame++;
 		}
-		else if (attacking && attackFrame < exhaustion)
+		else if (isAttacking && attackFrame < exhaustion)
 		{
 			attackFrame++;
 			sprite.setFillColor(sf::Color::Blue);
 		}
-		else if(attacking)
+		else if(isAttacking)
 		{
 			sprite.setFillColor(sf::Color::Blue);
 			hitboxActive = 0;
-			attacking = false;
+			isAttacking = false;
 			canAttack = true;
 			canWalk = true;
 			canDodge = true;
@@ -212,50 +215,39 @@ public:
 			exhaustion += staminaUse;
 		}
 
+		if (dodges < MaxDodges)
+		{
+			dodges += dodgeCharge;
+		}
 		if (inputDodge) 
 		{
-			if (isDodging == 0 && canDodge)
+			if (canDodge && dodges >= 1)
 			{
-				charge = 0;
-				canWalk = false;
+				dodges -= 1;
 				canDodge = false;
-				canTurn = false;
-				attacking = false;
-				charging = false;
-				canAttack = false;
-				if (inputVertical == 1)
+				isAttacking = false;
+				isCharging = false;
+				canAttack = true;
+				canBlock = true;
+				if ((inputHorizontal < 0 && velocity > 0) || (inputHorizontal > 0 && velocity < 0))
 				{
-					isDodging = 1;
-					canBlock = false;
-				}
-				else
-				{
-					isDodging = -1;
+					velocity = 0;
 				}
 				AddForce(dodgeForce * inputHorizontal);
-				dodgeFrame = 0;
 			}
-			dodgeFrame++;
-		}
-		else if (isDodging != 0 && dodgeFrame > dodgeFrames)
-		{
-			isDodging = 0;
-			canWalk = true;
-			canDodge = true;
-			canBlock = true;
-			canTurn = true;
-			canAttack = true;
 		}
 		else
 		{
-			dodgeFrame++;
+			canDodge = true;
 		}
+		
+
 
 		if (canWalk)
 		{
 			if (inputHorizontal == 1)
 			{
-				if (!charging)
+				if (!isCharging)
 				{
 					if (velocity < walkSpeedMax)
 					{
@@ -272,7 +264,7 @@ public:
 			}
 			if (inputHorizontal == -1)
 			{
-				if (!charging)
+				if (!isCharging)
 				{
 					if (velocity > -walkSpeedMax)
 					{
