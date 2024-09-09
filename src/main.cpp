@@ -17,7 +17,7 @@ int main()
     platformTexture.loadFromFile("platform.png");
     sf::Sprite platformSprite;
     platformSprite.setTexture(platformTexture);
-    platformSprite.setPosition(sf::Vector2f(0, 96));
+    platformSprite.setPosition(sf::Vector2f(64, 96));
 
     sf::View veiw = window.getDefaultView();
     window.setFramerateLimit(144);

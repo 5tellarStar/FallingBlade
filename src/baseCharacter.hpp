@@ -102,7 +102,7 @@ public:
 			dodge = sf::Keyboard::Numpad8;
 			skill = sf::Keyboard::Numpad9;
 			sprite.setFillColor(sf::Color::Red);
-			SetPosition(384);
+			SetPosition(416);
 			direction = -1;
 		}
 	}
