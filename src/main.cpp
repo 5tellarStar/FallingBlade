@@ -13,6 +13,11 @@ int main()
     BaseCharacter player2(true);
 
     sf::Clock globalTime;
+    sf::Texture platformTexture;
+    platformTexture.loadFromFile("platform.png");
+    sf::Sprite platformSprite;
+    platformSprite.setTexture(platformTexture);
+    platformSprite.setPosition(sf::Vector2f(0, 96));
 
     sf::View veiw = window.getDefaultView();
     window.setFramerateLimit(144);
@@ -157,8 +162,10 @@ int main()
 
         window.clear();
         window.draw(background);
+        window.draw(platformSprite);
         window.draw(player1.sprite);
         window.draw(player2.sprite);
+
         window.display();
     }
 }
