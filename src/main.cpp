@@ -6,6 +6,7 @@
 
 bool battling = false;
 
+
 int main()
 {
     auto window = sf::RenderWindow{ { 512u, 128u }, "Fighter" };
@@ -13,6 +14,10 @@ int main()
     BaseCharacter player2(true);
 
     sf::Clock globalTime;
+
+
+
+
     sf::Texture platformTexture;
     platformTexture.loadFromFile("platform.png");
     sf::Sprite platformSprite;
@@ -42,8 +47,15 @@ int main()
 
         if (globalTime.getElapsedTime().asSeconds() > (1.f/24.f))
         {
-            player1.Tick();
-            player2.Tick();
+            if (player1.Tick())
+            {
+
+            }
+            if (player2.Tick())
+            {
+
+            }
+
             float tempVel1 = player1.velocity;
             float tempVel2 = player2.velocity;
             if (player1.canTurn)

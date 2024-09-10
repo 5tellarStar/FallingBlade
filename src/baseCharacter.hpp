@@ -30,6 +30,9 @@ public:
 	float position;
 	float width = 16;
 
+	float top = 64;
+	float gravity = 0;
+
 	bool canWalk = true;
 	float walkSpeed = 2;
 	float walkSpeedMax = 5;
@@ -47,7 +50,6 @@ public:
 	float dodges = 3;
 	float MaxDodges = 3;
 	float dodgeCharge = 0.042f;
-
 
 
 	bool canAttack = true;
@@ -142,8 +144,10 @@ public:
 	void SetPosition(float pos)
 	{
 		position = pos;
-		sprite.setPosition(sf::Vector2f(pos - width, 64));
+		sprite.setPosition(sf::Vector2f(pos - width, top));
 	}
+
+
 	void AddForce(float force)
 	{
 		velocity += force / mass;
@@ -153,7 +157,7 @@ public:
 
 	}
 
-	void Tick()
+	bool Tick()
 	{
 		Skill();
 		blocking = inputVertical;
@@ -229,6 +233,7 @@ public:
 				isCharging = false;
 				canAttack = true;
 				canBlock = true;
+				canWalk = true;
 				if ((inputHorizontal < 0 && velocity > 0) || (inputHorizontal > 0 && velocity < 0))
 				{
 					velocity = 0;
@@ -283,6 +288,8 @@ public:
 
 		SetPosition(position + velocity);
 
+		
+
 		if (exhaustion > 0)
 		{
 			exhaustion -= staminaRegain;
@@ -296,7 +303,7 @@ public:
 				velocity = 0;
 			}
 		}
-		else if (velocity >= 0)
+		else if (velocity > 0)
 		{
 			velocity -= friction;
 			if (velocity <= 0)
@@ -304,6 +311,16 @@ public:
 				velocity = 0;
 			}
 		}
+
+		if (position - width > 440 || position + width < 72)
+		{
+			sprite.setFillColor(sf::Color::Magenta);
+			gravity += 2;
+			top += gravity;
+			return true;
+		}
+		return false;
+
 	}
 
 
