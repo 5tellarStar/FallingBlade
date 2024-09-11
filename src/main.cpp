@@ -10,13 +10,18 @@ int winsToWin = 3;
 
 int main()
 {
-    auto window = sf::RenderWindow{ { 512u, 128u }, "Fighter" };
+    auto window = sf::RenderWindow{ { 512u, 128u }, "Falling Blade" };
     BaseCharacter player1(false);
     BaseCharacter player2(true);
 
     sf::Clock globalTime;
 
 
+    sf::Texture titleTexture;
+    titleTexture.loadFromFile("title.png");
+    sf::Sprite titleSprite;
+    titleSprite.setTexture(titleTexture);
+    titleSprite.setPosition(sf::Vector2f(192, -10));
 
 
     sf::Texture platformTexture;
@@ -188,9 +193,9 @@ int main()
                 globalTime.restart();
             }
 
-            window.clear();
-            window.draw(background);
+            window.clear(sf::Color(51, 173, 255,0));
             window.draw(platformSprite);
+            window.draw(titleSprite);
             window.draw(player1.sprite);
             window.draw(player2.sprite);
             window.display();
