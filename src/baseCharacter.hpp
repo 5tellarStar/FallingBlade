@@ -16,6 +16,11 @@ public:
 	int direction;
 	bool canTurn = true;
 
+	bool player2;
+
+	bool dead = false;
+	int winCount = 0;
+
 	int inputHorizontal = 0;
 	int inputVertical = 0;
 
@@ -75,13 +80,13 @@ public:
 	float attackRange = 32;
 	float lowAttackRange = 32;
 
-	BaseCharacter(bool player2)
+	BaseCharacter(bool isPlayer2)
 	{
 
 		sprite.setSize(sf::Vector2f(32, 64));
 
 
-		if (!player2)
+		if (!isPlayer2)
 		{
 			up = sf::Keyboard::W;
 			right = sf::Keyboard::D;
@@ -93,6 +98,7 @@ public:
 			sprite.setFillColor(sf::Color::Blue);
 			SetPosition(96);
 			direction = 1;
+			player2 = false;
 		}
 		else
 		{
@@ -103,6 +109,27 @@ public:
 			attack = sf::Keyboard::Numpad7;
 			dodge = sf::Keyboard::Numpad8;
 			skill = sf::Keyboard::Numpad9;
+			sprite.setFillColor(sf::Color::Red);
+			SetPosition(416);
+			direction = -1;
+			player2 = true;
+		}
+	}
+
+	void Reset()
+	{
+		velocity = 0;
+		dead = false;
+		top = 64;
+		gravity = 0;
+		if (!player2)
+		{
+			sprite.setFillColor(sf::Color::Blue);
+			SetPosition(96);
+			direction = 1;
+		}
+		else
+		{
 			sprite.setFillColor(sf::Color::Red);
 			SetPosition(416);
 			direction = -1;
@@ -141,6 +168,7 @@ public:
 		inputDodge = sf::Keyboard::isKeyPressed(dodge);
 		inputSkill = sf::Keyboard::isKeyPressed(skill);
 	}
+
 	void SetPosition(float pos)
 	{
 		position = pos;
@@ -152,139 +180,150 @@ public:
 	{
 		velocity += force / mass;
 	}
+
 	void Skill()
 	{
 
 	}
 
+	void ResetInput()
+	{
+		inputHorizontal = 0;
+		inputVertical = 0;
+		inputAttack = false;
+		inputDodge = false;
+		inputSkill = false;
+	}
+
 	bool Tick()
 	{
-		Skill();
-		blocking = inputVertical;
+			Skill();
+			blocking = inputVertical;
 
-		if (inputAttack)
-		{
-			if (!isCharging && canAttack)
+			if (inputAttack)
 			{
-				canBlock = false;
-				isCharging = true;
-				canAttack = false;
-				canTurn = false;
-				sprite.setFillColor(sf::Color::Red);
+				if (!isCharging && canAttack)
+				{
+					canBlock = false;
+					isCharging = true;
+					canAttack = false;
+					canTurn = false;
+					sprite.setFillColor(sf::Color::Red);
+				}
+				if (isCharging && charge < maxCharge)
+				{
+					charge += chargeSpeed;
+				}
 			}
-			if (isCharging && charge < maxCharge)
+			else if (isCharging)
 			{
-				charge += chargeSpeed;
-			}
-		}
-		else if (isCharging)
-		{
-			attackState = inputVertical;
-			canWalk = false;
-			isAttacking = true;
-			isCharging = false;
-			AddForce(charge * inputHorizontal);
-			charge = 0;
-			attackFrame = 0;
-		}
-
-		if (isAttacking && attackFrame < AttackFrames)
-		{
-			if (attackFrame == AttackCancelableFrames)
-			{
-				canDodge = false;
-			}
-			if (attackFrame == firstActiveAttackFrame)
-			{
-				sprite.setFillColor(sf::Color::Yellow);
-				hitboxActive = true;
-			}
-			attackFrame++;
-		}
-		else if (isAttacking && attackFrame < exhaustion)
-		{
-			attackFrame++;
-			sprite.setFillColor(sf::Color::Blue);
-		}
-		else if(isAttacking)
-		{
-			sprite.setFillColor(sf::Color::Blue);
-			hitboxActive = 0;
-			isAttacking = false;
-			canAttack = true;
-			canWalk = true;
-			canDodge = true;
-			canBlock = true;
-			canTurn = true;
-			exhaustion += staminaUse;
-		}
-
-		if (dodges < MaxDodges)
-		{
-			dodges += dodgeCharge;
-		}
-		if (inputDodge) 
-		{
-			if (canDodge && dodges >= 1)
-			{
-				dodges -= 1;
-				canDodge = false;
-				isAttacking = false;
+				attackState = inputVertical;
+				canWalk = false;
+				isAttacking = true;
 				isCharging = false;
+				AddForce(charge * inputHorizontal);
+				charge = 0;
+				attackFrame = 0;
+			}
+
+			if (isAttacking && attackFrame < AttackFrames)
+			{
+				if (attackFrame == AttackCancelableFrames)
+				{
+					canDodge = false;
+				}
+				if (attackFrame == firstActiveAttackFrame)
+				{
+					sprite.setFillColor(sf::Color::Yellow);
+					hitboxActive = true;
+				}
+				attackFrame++;
+			}
+			else if (isAttacking && attackFrame < exhaustion)
+			{
+				attackFrame++;
+				sprite.setFillColor(sf::Color::Blue);
+			}
+			else if (isAttacking)
+			{
+				sprite.setFillColor(sf::Color::Blue);
+				hitboxActive = 0;
+				isAttacking = false;
 				canAttack = true;
-				canBlock = true;
 				canWalk = true;
-				if ((inputHorizontal < 0 && velocity > 0) || (inputHorizontal > 0 && velocity < 0))
-				{
-					velocity = 0;
-				}
-				AddForce(dodgeForce * inputHorizontal);
+				canDodge = true;
+				canBlock = true;
+				canTurn = true;
+				exhaustion += staminaUse;
 			}
-		}
-		else
-		{
-			canDodge = true;
-		}
+
+			if (dodges < MaxDodges)
+			{
+				dodges += dodgeCharge;
+			}
+			if (inputDodge)
+			{
+				if (canDodge && dodges >= 1)
+				{
+					dodges -= 1;
+					canDodge = false;
+					isAttacking = false;
+					isCharging = false;
+					canAttack = true;
+					canBlock = true;
+					canWalk = true;
+					if ((inputHorizontal < 0 && velocity > 0) || (inputHorizontal > 0 && velocity < 0))
+					{
+						velocity = 0;
+					}
+					AddForce(dodgeForce * inputHorizontal);
+				}
+			}
+			else
+			{
+				canDodge = true;
+			}
+
+
+
+			if (canWalk)
+			{
+				if (inputHorizontal == 1)
+				{
+					if (!isCharging)
+					{
+						if (velocity < walkSpeedMax)
+						{
+							velocity += walkSpeed;
+						}
+					}
+					else
+					{
+						if (velocity < walkSpeedMax / 2)
+						{
+							velocity += walkSpeed / 2;
+						}
+					}
+				}
+				if (inputHorizontal == -1)
+				{
+					if (!isCharging)
+					{
+						if (velocity > -walkSpeedMax)
+						{
+							velocity -= walkSpeed;
+						}
+					}
+					else
+					{
+						if (velocity > -walkSpeedMax / 2)
+						{
+							velocity -= walkSpeed / 2;
+						}
+					}
+				}
+			}
 		
-
-
-		if (canWalk)
-		{
-			if (inputHorizontal == 1)
-			{
-				if (!isCharging)
-				{
-					if (velocity < walkSpeedMax)
-					{
-						velocity += walkSpeed;
-					}
-				}
-				else
-				{
-					if (velocity < walkSpeedMax / 2)
-					{
-						velocity += walkSpeed / 2;
-					}
-				}
-			}
-			if (inputHorizontal == -1)
-			{
-				if (!isCharging)
-				{
-					if (velocity > -walkSpeedMax)
-					{
-						velocity -= walkSpeed;
-					}
-				}
-				else
-				{
-					if (velocity > -walkSpeedMax / 2)
-					{
-						velocity -= walkSpeed / 2;
-					}
-				}
-			}
-		}
 
 		SetPosition(position + velocity);
 
@@ -317,7 +356,11 @@ public:
 			sprite.setFillColor(sf::Color::Magenta);
 			gravity += 2;
 			top += gravity;
-			return true;
+			if (!dead)
+			{
+				dead = true;
+				return true;
+			}
 		}
 		return false;
 
