@@ -21,7 +21,7 @@ int main()
     titleTexture.loadFromFile("title.png");
     sf::Sprite titleSprite;
     titleSprite.setTexture(titleTexture);
-    titleSprite.setPosition(sf::Vector2f(192, -10));
+    titleSprite.setPosition(sf::Vector2f(192, -32));
 
 
     sf::Texture platformTexture;
