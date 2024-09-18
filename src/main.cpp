@@ -4,6 +4,7 @@
 #include <iostream>
 #include <array>
 #include "baseCharacter.hpp"
+#include "neuralNetwork.hpp"
 
 
 bool battling = false;
