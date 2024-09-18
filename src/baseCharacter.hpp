@@ -135,7 +135,38 @@ public:
 			direction = -1;
 		}
 	}
+	void Input(bool inputs[7]) 
+	{
+		if (inputs[0] && !inputs[1])
+		{
+			inputVertical = 1;
+		}
+		else if (!inputs[0] && inputs[1])
+		{
+			inputVertical = -1;
+		}
+		else
+		{
+			inputVertical = 0;
+		}
 
+		if (inputs[2] && !inputs[3])
+		{
+			inputHorizontal = 1;
+		}
+		else if (!inputs[2] && inputs[3])
+		{
+			inputHorizontal = -1;
+		}
+		else
+		{
+			inputHorizontal = 0;
+		}
+
+		inputAttack = inputs[4];
+		inputDodge = inputs[5];
+		inputSkill = inputs[6];
+	}
 	void Input()
 	{
 		if (sf::Keyboard::isKeyPressed(up) && !sf::Keyboard::isKeyPressed(down))

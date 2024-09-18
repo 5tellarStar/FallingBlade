@@ -1,12 +1,15 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+#include <iostream>
+#include <array>
 #include "baseCharacter.hpp"
 
 
 bool battling = false;
 
 int winsToWin = 3;
+bool training = true;
 
 int main()
 {
@@ -64,131 +67,138 @@ int main()
 
             if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f))
             {
-                if (player1.Tick())
+                if (!training)
                 {
-                    player1.ResetInput();
-                    player2.ResetInput();
-                    player2.winCount++;
-                }
-                if (player2.Tick())
-                {
-                    player1.ResetInput();
-                    player2.ResetInput();
-                    player1.winCount++;
-                }
+                    if (player1.Tick())
+                    {
+                        player1.ResetInput();
+                        player2.ResetInput();
+                        player2.winCount++;
+                    }
+                    if (player2.Tick())
+                    {
+                        player1.ResetInput();
+                        player2.ResetInput();
+                        player1.winCount++;
+                    }
 
-                float tempVel1 = player1.velocity;
-                float tempVel2 = player2.velocity;
-                if (player1.canTurn)
-                {
-                    if (player1.position < player2.position)
+                    float tempVel1 = player1.velocity;
+                    float tempVel2 = player2.velocity;
+                    if (player1.canTurn)
                     {
-                        player1.direction = 1;
+                        if (player1.position < player2.position)
+                        {
+                            player1.direction = 1;
+                        }
+                        else
+                        {
+                            player1.direction = -1;
+                        }
                     }
-                    else
+                    if (player2.canTurn)
                     {
-                        player1.direction = -1;
+                        if (player2.position < player1.position)
+                        {
+                            player2.direction = 1;
+                        }
+                        else
+                        {
+                            player2.direction = -1;
+                        }
                     }
-                }
-                if (player2.canTurn)
-                {
-                    if (player2.position < player1.position)
-                    {
-                        player2.direction = 1;
-                    }
-                    else
-                    {
-                        player2.direction = -1;
-                    }
-                }
-                bool p1Hitp2 = player1.hitboxActive &&
-                    (
+                    bool p1Hitp2 = player1.hitboxActive &&
                         (
-                            player1.direction == -1 &&
                             (
-                                (player2.position - player2.width < player1.position && player2.position - player2.width > player1.position - player1.attackRange) ||
-                                (player2.position + player2.width < player1.position && player2.position + player2.width > player1.position - player1.attackRange)
-                                )
-                            ) ||
-                        (
-                            player1.direction == 1 &&
+                                player1.direction == -1 &&
+                                (
+                                    (player2.position - player2.width < player1.position && player2.position - player2.width > player1.position - player1.attackRange) ||
+                                    (player2.position + player2.width < player1.position && player2.position + player2.width > player1.position - player1.attackRange)
+                                    )
+                                ) ||
                             (
-                                (player2.position - player2.width > player1.position && player2.position - player2.width < player1.position + player1.attackRange) ||
-                                (player2.position + player2.width > player1.position && player2.position + player2.width < player1.position + player1.attackRange)
-                                )
-                            ) ||
-                        (player2.position - player2.width < player1.position && player2.position + player2.width > player1.position)
-                        );
+                                player1.direction == 1 &&
+                                (
+                                    (player2.position - player2.width > player1.position && player2.position - player2.width < player1.position + player1.attackRange) ||
+                                    (player2.position + player2.width > player1.position && player2.position + player2.width < player1.position + player1.attackRange)
+                                    )
+                                ) ||
+                            (player2.position - player2.width < player1.position && player2.position + player2.width > player1.position)
+                            );
 
-                bool p2Hitp1 = player2.hitboxActive &&
-                    (
+                    bool p2Hitp1 = player2.hitboxActive &&
                         (
-                            player2.direction == -1 &&
                             (
-                                (player1.position - player1.width < player2.position && player1.position - player1.width > player2.position - player2.attackRange) ||
-                                (player1.position + player1.width < player2.position && player1.position + player1.width > player2.position - player2.attackRange)
-                                )
-                            ) ||
-                        (
-                            player2.direction == 1 &&
+                                player2.direction == -1 &&
+                                (
+                                    (player1.position - player1.width < player2.position && player1.position - player1.width > player2.position - player2.attackRange) ||
+                                    (player1.position + player1.width < player2.position && player1.position + player1.width > player2.position - player2.attackRange)
+                                    )
+                                ) ||
                             (
-                                (player1.position - player1.width > player2.position && player1.position - player1.width < player2.position + player2.attackRange) ||
-                                (player1.position + player1.width > player2.position && player1.position + player1.width < player2.position + player2.attackRange)
+                                player2.direction == 1 &&
+                                (
+                                    (player1.position - player1.width > player2.position && player1.position - player1.width < player2.position + player2.attackRange) ||
+                                    (player1.position + player1.width > player2.position && player1.position + player1.width < player2.position + player2.attackRange)
+                                    )
+                                ) ||
+                            (player2.position - player2.width < player1.position && player2.position + player2.width > player1.position)
+                            );
+
+                    bool swordHit = player1.hitboxActive && player2.hitboxActive &&
+                        (
+                            (
+                                player1.direction == 1 && player2.direction == -1 &&
+                                player1.position + player1.attackRange > player2.position - player2.attackRange && player1.position + player1.attackRange < player2.position
+                                ) ||
+                            (
+                                player1.direction == -1 && player2.direction == 1 &&
+                                player1.position - player1.attackRange < player2.position + player2.attackRange && player1.position + player1.attackRange > player2.position
                                 )
-                            ) ||
-                        (player2.position - player2.width < player1.position && player2.position + player2.width > player1.position)
-                        );
 
-                bool swordHit = player1.hitboxActive && player2.hitboxActive &&
-                    (
-                        (
-                            player1.direction == 1 && player2.direction == -1 &&
-                            player1.position + player1.attackRange > player2.position - player2.attackRange && player1.position + player1.attackRange < player2.position
-                            ) ||
-                        (
-                            player1.direction == -1 && player2.direction == 1 &&
-                            player1.position - player1.attackRange < player2.position + player2.attackRange && player1.position + player1.attackRange > player2.position
-                            )
+                            );
 
-                        );
-
-                if (p1Hitp2 && !p2Hitp1 && !swordHit)
-                {
-                    if (player1.attackState == player2.blocking)
+                    if (p1Hitp2 && !p2Hitp1 && !swordHit)
                     {
-                        player2.sprite.setFillColor(sf::Color::Green);
-                        player2.AddForce((player1.attackVelocity / 2) * player1.mass * player1.direction);
+                        if (player1.attackState == player2.blocking)
+                        {
+                            player2.sprite.setFillColor(sf::Color::Green);
+                            player2.AddForce((player1.attackVelocity / 2) * player1.mass * player1.direction);
+                        }
+                        else
+                        {
+                            player2.sprite.setFillColor(sf::Color::Black);
+                            player2.AddForce((tempVel1 - tempVel2 + player1.attackVelocity * player1.direction) * player1.mass);
+                        }
+                        player1.hitboxActive = false;
+                        player1.velocity = player1.direction * -1 * (player1.attackVelocity);
                     }
-                    else
+                    else if (!p1Hitp2 && p2Hitp1 && !swordHit)
                     {
-                        player2.sprite.setFillColor(sf::Color::Black);
-                        player2.AddForce((tempVel1 - tempVel2 + player1.attackVelocity * player1.direction) * player1.mass);
+                        if (player2.attackState == player1.blocking)
+                        {
+                            player1.sprite.setFillColor(sf::Color::Green);
+
+                            player1.AddForce((player2.attackVelocity / 2) * player2.mass * player2.direction);
+                        }
+                        else
+                        {
+                            player1.sprite.setFillColor(sf::Color::Black);
+                            player1.AddForce((tempVel2 - tempVel1 + player2.attackVelocity * player2.direction) * player2.mass);
+                        }
+                        player2.hitboxActive = false;
+                        player2.velocity = player2.direction * -1 * (player2.attackVelocity);
                     }
-                    player1.hitboxActive = false;
-                    player1.velocity = player1.direction * -1 * (player1.attackVelocity);
+                    else if (swordHit)
+                    {
+                        player1.hitboxActive = false;
+                        player2.hitboxActive = false;
+                        player1.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player2.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player2.direction) * player2.mass));
+                        player2.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player1.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player1.direction) * player2.mass));
+                    }
                 }
-                else if (!p1Hitp2 && p2Hitp1 && !swordHit)
+                else
                 {
-                    if (player2.attackState == player1.blocking)
-                    {
-                        player1.sprite.setFillColor(sf::Color::Green);
 
-                        player1.AddForce((player2.attackVelocity / 2) * player2.mass * player2.direction);
-                    }
-                    else
-                    {
-                        player1.sprite.setFillColor(sf::Color::Black);
-                        player1.AddForce((tempVel2 - tempVel1 + player2.attackVelocity * player2.direction) * player2.mass);
-                    }
-                    player2.hitboxActive = false;
-                    player2.velocity = player2.direction * -1 * (player2.attackVelocity);
-                }
-                else if (swordHit)
-                {
-                    player1.hitboxActive = false;
-                    player2.hitboxActive = false;
-                    player1.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player2.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player2.direction) * player2.mass));
-                    player2.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player1.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player1.direction) * player2.mass));
                 }
                 globalTime.restart();
             }
