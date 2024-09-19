@@ -14,8 +14,8 @@ class Layer
 private:
 	int numNodesIn;
 	int numNodesOut;
-	double weights[2];
-	double biases[];
+	std::vector<std::vector<double>> weights;
+	std::vector<double> biases;
 
 
 public:
@@ -24,15 +24,47 @@ public:
 		numNodesIn = nodesIn;
 		numNodesOut = nodesOut;
 
-		weights = new double[numNodesIn, numNodesOut];
-		biases = new double[numNodesOut];
+		weights.reserve(numNodesIn);
+		for each ( std::vector<double> vect in weights)
+		{
+			vect.reserve(numNodesOut);
+		}
+		biases.reserve(numNodesOut);
 	}
-	std::list<double> calcWeightedOutputs(std::list<double> inputs)
+	std::vector<double> calcWeightedOutputs(std::vector<double> inputs)
 	{
-		std::list<double> weightedInputs(numNodesOut);
+		std::vector<double> weightedInputs(numNodesIn);
 
+		for (int nodeOut = 0; nodeOut < numNodesOut; nodeOut++)
+		{
+			double weightedInput = biases[nodeOut];
+			for (int nodeIn = 0; nodeIn < numNodesIn; nodeIn++)
+			{
+				weightedInput += inputs[nodeIn] * weights[nodeIn][nodeOut];
+			}
+			weightedInputs[nodeOut] = weightedInput;
+		}
 
+		return weightedInputs;
 	}
 	
+};
+
+class NeuralNetwork
+{
+private:
+	std::vector<Layer> layers;
+
+public:
+	NeuralNetwork(std::vector<int> layerSizes) 
+	{
+		layers.reserve(layerSizes.size() - 1);
+		for (int i = 0; i < layers.size(); i++)
+		{
+			layers[i] = Layer(layerSizes[i], layerSizes[i + 1]);
+		}
+	}
+
+
 };
 
