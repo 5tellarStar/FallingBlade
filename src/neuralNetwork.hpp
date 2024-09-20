@@ -16,7 +16,10 @@ private:
 	int numNodesOut;
 	std::vector<std::vector<double>> weights;
 	std::vector<double> biases;
-
+	double ActivationFunction(double Input)
+	{
+		return 1 / (1 + exp(-Input));
+	}
 
 public:
 	Layer(int nodesIn, int nodesOut) 
@@ -31,9 +34,9 @@ public:
 		}
 		biases.reserve(numNodesOut);
 	}
-	std::vector<double> calcWeightedOutputs(std::vector<double> inputs)
+	std::vector<double> calcOutputs(std::vector<double> inputs)
 	{
-		std::vector<double> weightedInputs(numNodesIn);
+		std::vector<double> activations(numNodesIn);
 
 		for (int nodeOut = 0; nodeOut < numNodesOut; nodeOut++)
 		{
@@ -42,10 +45,10 @@ public:
 			{
 				weightedInput += inputs[nodeIn] * weights[nodeIn][nodeOut];
 			}
-			weightedInputs[nodeOut] = weightedInput;
+			activations[nodeOut] = ActivationFunction(weightedInput);
 		}
 
-		return weightedInputs;
+		return activations;
 	}
 	
 };
@@ -64,7 +67,15 @@ public:
 			layers[i] = Layer(layerSizes[i], layerSizes[i + 1]);
 		}
 	}
-
+	
+	std::vector<double> CalcOutputs(std::vector<double> inputs)
+	{
+		for each (Layer layer in layers)
+		{
+			inputs = layer.calcOutputs(inputs);
+		}
+		return inputs;
+	}
 
 };
 
