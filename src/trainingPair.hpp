@@ -1,18 +1,24 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+#include <iostream>
+#include <array>
+#include <list>
+#include <vector>
 #include "baseCharacter.hpp"
+#include "neuralNetwork.hpp"
 
 class TrainingPair
 {
 public:
-	BaseCharacter player1(false);
-	BaseCharacter player2(true);
+	BaseCharacter player1 = BaseCharacter(false);
+	BaseCharacter player2 = BaseCharacter(true);
+    NeuralNetwork ai = NeuralNetwork(std::vector<int>{11, 15, 15, 15, 15, 7});
 	TrainingPair()
 	{
 
 	}
-	Tick()
+	void Tick()
 	{
         
         if (player1.Tick())
@@ -25,6 +31,7 @@ public:
             player1.ResetInput();
             player2.ResetInput();
         }
+
 
         float tempVel1 = player1.velocity;
         float tempVel2 = player2.velocity;

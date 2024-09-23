@@ -5,12 +5,15 @@
 #include <array>
 #include "baseCharacter.hpp"
 #include "neuralNetwork.hpp"
+#include "trainingPair.hpp"
 
 
 bool battling = false;
 
 int winsToWin = 3;
 bool training = true;
+TrainingPair pairs[100];
+NeuralNetwork ai = NeuralNetwork(std::vector<int>{11, 15, 15, 15, 15, 7});
 
 int main()
 {
@@ -68,6 +71,7 @@ int main()
 
             if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f))
             {
+                window.clear(sf::Color(51, 173, 255,0));
                 if (!training)
                 {
                     if (player1.Tick())
@@ -196,19 +200,23 @@ int main()
                         player1.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player2.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player2.direction) * player2.mass));
                         player2.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player1.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player1.direction) * player2.mass));
                     }
+                    window.draw(player1.sprite);
+                    window.draw(player2.sprite);
                 }
                 else
                 {
-
+                    for each (TrainingPair pair in pairs)
+                    {
+                        pair.Tick();
+                        window.draw(pair.player1.sprite);
+                        window.draw(pair.player2.sprite);
+                    }
                 }
                 globalTime.restart();
             }
 
-            window.clear(sf::Color(51, 173, 255,0));
             window.draw(platformSprite);
             window.draw(titleSprite);
-            window.draw(player1.sprite);
-            window.draw(player2.sprite);
             window.display();
         }
 
