@@ -11,7 +11,7 @@
 bool battling = false;
 
 int winsToWin = 3;
-bool training = true;
+bool training = false;
 TrainingPair pairs[100];
 NeuralNetwork ai = NeuralNetwork(std::vector<int>{11, 15, 15, 15, 15, 7});
 
@@ -45,6 +45,9 @@ int main()
     {
         while ((player1.winCount < winsToWin && player2.winCount < winsToWin) || !sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
         {
+            window.clear(sf::Color(51, 173, 255, 0));
+            window.draw(platformSprite);
+            window.draw(titleSprite);
             for (auto event = sf::Event{}; window.pollEvent(event);)
             {
                 if (event.type == sf::Event::Closed)
@@ -57,23 +60,36 @@ int main()
                     window.setView(veiw);
                 }
             }
-            if (!player1.dead && !player2.dead)
+            if (training)
             {
-                player1.Input();
-                player2.Input();
-            }
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
-            {
-                player1.Reset();
-                player2.Reset();
-                player1.sprite.setFillColor(sf::Color::Cyan);
-            }
-
-            if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f))
-            {
-                window.clear(sf::Color(51, 173, 255,0));
-                if (!training)
+                bool done = true;
+                for each (TrainingPair pair in pairs)
                 {
+                    if (!pair.done)
+                    {
+                        pair.Tick();
+                        window.draw(pair.player1.sprite);
+                        window.draw(pair.player2.sprite);
+                        done = false;
+                    }
+                }
+            }
+            else
+            {
+                if (!player1.dead && !player2.dead)
+                {
+                    player1.Input();
+                    player2.Input();
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+                {
+                    player1.Reset();
+                    player2.Reset();
+                }
+
+                if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f))
+                {
+
                     if (player1.Tick())
                     {
                         player1.ResetInput();
@@ -200,23 +216,12 @@ int main()
                         player1.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player2.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player2.direction) * player2.mass));
                         player2.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player1.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player1.direction) * player2.mass));
                     }
-                    window.draw(player1.sprite);
-                    window.draw(player2.sprite);
-                }
-                else
-                {
-                    for each (TrainingPair pair in pairs)
-                    {
-                        pair.Tick();
-                        window.draw(pair.player1.sprite);
-                        window.draw(pair.player2.sprite);
-                    }
-                }
-                globalTime.restart();
-            }
 
-            window.draw(platformSprite);
-            window.draw(titleSprite);
+                    globalTime.restart();
+                }
+                window.draw(player1.sprite);
+                window.draw(player2.sprite);
+            }
             window.display();
         }
 

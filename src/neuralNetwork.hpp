@@ -1,3 +1,5 @@
+
+
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -7,7 +9,7 @@
 #include <vector>
 #include "baseCharacter.hpp"
 
-
+#pragma once
 
 class Layer
 {
@@ -78,4 +80,5 @@ public:
 	}
 
 };
+
 

@@ -8,9 +8,13 @@
 #include "baseCharacter.hpp"
 #include "neuralNetwork.hpp"
 
+#pragma once
+
 class TrainingPair
 {
 public:
+    bool done = false;
+    double rewards = 0;
 	BaseCharacter player1 = BaseCharacter(false);
 	BaseCharacter player2 = BaseCharacter(true);
     NeuralNetwork ai = NeuralNetwork(std::vector<int>{11, 15, 15, 15, 15, 7});
@@ -20,14 +24,16 @@ public:
 	}
 	void Tick()
 	{
-        
+        player2.Input(ai.CalcOutputs())
         if (player1.Tick())
         {
             player1.ResetInput();
             player2.ResetInput();
+            done = true;
         }
         if (player2.Tick())
         {
+            done = true;
             player1.ResetInput();
             player2.ResetInput();
         }

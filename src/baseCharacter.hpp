@@ -2,6 +2,8 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
+#pragma once
+
 class BaseCharacter
 {
 public:
@@ -80,6 +82,10 @@ public:
 	float attackRange = 32;
 	float lowAttackRange = 32;
 
+	float distToEdge1;
+	float distToEdge2;
+
+
 	BaseCharacter(bool isPlayer2)
 	{
 
@@ -135,13 +141,13 @@ public:
 			direction = -1;
 		}
 	}
-	void Input(bool inputs[7]) 
+	void Input(std::vector<double> inputs) 
 	{
-		if (inputs[0] && !inputs[1])
+		if (inputs[0] > 0.9 && inputs[1] < 0.9)
 		{
 			inputVertical = 1;
 		}
-		else if (!inputs[0] && inputs[1])
+		else if (inputs[0] < 0.9 && inputs[1] > 0.9)
 		{
 			inputVertical = -1;
 		}
@@ -150,11 +156,11 @@ public:
 			inputVertical = 0;
 		}
 
-		if (inputs[2] && !inputs[3])
+		if (inputs[2] > 0.9 && inputs[3] < 0.9)
 		{
 			inputHorizontal = 1;
 		}
-		else if (!inputs[2] && inputs[3])
+		else if (inputs[2] < 0.9 && inputs[3] > 0.9)
 		{
 			inputHorizontal = -1;
 		}
@@ -163,9 +169,9 @@ public:
 			inputHorizontal = 0;
 		}
 
-		inputAttack = inputs[4];
-		inputDodge = inputs[5];
-		inputSkill = inputs[6];
+		inputAttack = inputs[4] > 0.9;
+		inputDodge = inputs[5] > 0.9;
+		inputSkill = inputs[6] > 0.9;
 	}
 	void Input()
 	{
@@ -382,7 +388,10 @@ public:
 			}
 		}
 
-		if (position - width > 440 || position + width < 72)
+		distToEdge1 = 440 - position + width;
+		
+
+		if (distToEdge1 <= 0 || position + width < 72)
 		{
 			sprite.setFillColor(sf::Color::Magenta);
 			gravity += 2;
