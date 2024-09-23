@@ -276,7 +276,7 @@ public:
 				}
 				attackFrame++;
 			}
-			else if (isAttacking && attackFrame < exhaustion)
+			else if (isAttacking && attackFrame < exhaustion + AttackFrames)
 			{
 				attackFrame++;
 				sprite.setFillColor(sf::Color::Blue);
@@ -284,6 +284,7 @@ public:
 			else if (isAttacking)
 			{
 				sprite.setFillColor(sf::Color::Blue);
+				attackFrame = 0;
 				hitboxActive = 0;
 				isAttacking = false;
 				canAttack = true;
@@ -388,10 +389,12 @@ public:
 			}
 		}
 
-		distToEdge1 = 440 - position + width;
+		distToEdge1 =  440 - (position - width);
+		distToEdge2 = (position + width) - 72;
+
 		
 
-		if (distToEdge1 <= 0 || position + width < 72)
+		if (distToEdge1 <= 0 || distToEdge2 <= 0)
 		{
 			sprite.setFillColor(sf::Color::Magenta);
 			gravity += 2;

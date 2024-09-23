@@ -11,7 +11,7 @@
 bool battling = false;
 
 int winsToWin = 3;
-bool training = false;
+bool training = true;
 TrainingPair pairs[100];
 NeuralNetwork ai = NeuralNetwork(std::vector<int>{11, 15, 15, 15, 15, 7});
 

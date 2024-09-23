@@ -17,14 +17,30 @@ public:
     double rewards = 0;
 	BaseCharacter player1 = BaseCharacter(false);
 	BaseCharacter player2 = BaseCharacter(true);
-    NeuralNetwork ai = NeuralNetwork(std::vector<int>{11, 15, 15, 15, 15, 7});
+    NeuralNetwork ai = NeuralNetwork(std::vector<int>{13, 20, 20, 20, 20, 20,7});
 	TrainingPair()
 	{
 
 	}
 	void Tick()
 	{
-        player2.Input(ai.CalcOutputs())
+        player2.Input(ai.CalcOutputs(std::vector<double>
+            {
+                player2.distToEdge1, 
+                player2.distToEdge2, 
+                player1.distToEdge1, 
+                player1.distToEdge2, 
+                player2.position - player1.position, 
+                player2.dodges, 
+                player1.dodges, 
+                (double)player1.blocking, 
+                (double)player2.blocking, 
+                (double)player1.firstActiveAttackFrame - player1.attackFrame, 
+                (double)player1.firstActiveAttackFrame - player1.attackFrame,
+                player2.velocity,
+                player1.velocity
+            }));
+
         if (player1.Tick())
         {
             player1.ResetInput();
