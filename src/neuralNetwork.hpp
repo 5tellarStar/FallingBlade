@@ -33,15 +33,23 @@ public:
 		numNodesOut = nodesOut;
 
 		weights.reserve(numNodesIn);
-		for each ( std::vector<double> vect in weights)
+		for (int i = 0; i < numNodesIn; i++)
 		{
-			vect.reserve(numNodesOut);
+			std::vector<double> weight;
+			for (int i = 0; i < numNodesOut; i++)
+			{
+				weight.push_back(0);
+			}
+			weights.push_back(weight);
 		}
-		biases.reserve(numNodesOut);
+		for (int i = 0; i < numNodesOut; i++)
+		{
+			biases.push_back(0);
+		}
 	}
 	std::vector<double> calcOutputs(std::vector<double> inputs)
 	{
-		std::vector<double> activations(numNodesIn);
+		std::vector<double> activations;
 
 		for (int nodeOut = 0; nodeOut < numNodesOut; nodeOut++)
 		{
@@ -50,7 +58,7 @@ public:
 			{
 				weightedInput += inputs[nodeIn] * weights[nodeIn][nodeOut];
 			}
-			activations[nodeOut] = ActivationFunction(weightedInput);
+			activations.push_back(ActivationFunction(weightedInput));
 		}
 
 		return activations;
@@ -68,11 +76,11 @@ public:
 
 	NeuralNetwork(std::vector<int> layerSizes) 
 	{
-		layers.reserve(layerSizes.size() - 1);
-		for (int i = 0; i < layers.size(); i++)
+		for (int i = 0; i < layerSizes.size() - 1; i++)
 		{
-			layers[i] = Layer(layerSizes[i], layerSizes[i + 1]);
+			layers.push_back(Layer(layerSizes[i], layerSizes[i + 1]));
 		}
+
 		Randomize();
 	}
 	

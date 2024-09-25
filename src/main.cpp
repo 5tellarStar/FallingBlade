@@ -23,6 +23,11 @@ int main()
 
     sf::Clock globalTime;
 
+    for each (TrainingPair pair in pairs)
+    {
+        pair.player1.sprite.setFillColor(sf::Color::Blue);
+        pair.player2.sprite.setFillColor(sf::Color::Red);
+    }
 
     sf::Texture titleTexture;
     titleTexture.loadFromFile("title.png");
@@ -67,10 +72,164 @@ int main()
                 {
                     if (!pair.done)
                     {
-                        pair.Tick();
+                        pair.player2.Input(pair.ai.CalcOutputs(std::vector<double>
+                        {
+                            pair.player2.distToEdge1,
+                                pair.player2.distToEdge2,
+                                pair.player1.distToEdge1,
+                                pair.player1.distToEdge2,
+                                pair.player2.position - pair.player1.position,
+                                pair.player2.dodges,
+                                pair.player1.dodges,
+                                (double)pair.player1.blocking,
+                                (double)pair.player2.blocking,
+                                (double)pair.player1.firstActiveAttackFrame - pair.player1.attackFrame,
+                                (double)pair.player1.firstActiveAttackFrame - pair.player1.attackFrame,
+                                pair.player2.velocity,
+                                pair.player1.velocity
+                        }));
+                        pair.player1.Input(std::vector<double>{0, 0, 0, 0, 0, 0, 0});
+                        pair.player1.sprite.setFillColor(sf::Color::Blue);
+                        pair.player2.sprite.setFillColor(sf::Color::Red);
+                        if (pair.player1.Tick())
+                        {
+                            pair.player1.ResetInput();
+                            pair.player2.ResetInput();
+                            pair.done = true;
+                        }
+                        if (pair.player2.Tick())
+                        {
+                            pair.done = true;
+                            pair.player1.ResetInput();
+                            pair.player2.ResetInput();
+                        }
+
+
+                        float tempVel1 = pair.player1.velocity;
+                        float tempVel2 = pair.player2.velocity;
+                        if (pair.player1.canTurn)
+                        {
+                            if (pair.player1.position < pair.player2.position)
+                            {
+                                pair.player1.direction = 1;
+                            }
+                            else
+                            {
+                                pair.player1.direction = -1;
+                            }
+                        }
+                        if (pair.player2.canTurn)
+                        {
+                            if (pair.player2.position < pair.player1.position)
+                            {
+                                pair.player2.direction = 1;
+                            }
+                            else
+                            {
+                                pair.player2.direction = -1;
+                            }
+                        }
+                        bool p1Hitp2 = pair.player1.hitboxActive &&
+                            (
+                                (
+                                    pair.player1.direction == -1 &&
+                                    (
+                                        (pair.player2.position - pair.player2.width < pair.player1.position && pair.player2.position - pair.player2.width > pair.player1.position - pair.player1.attackRange) ||
+                                        (pair.player2.position + pair.player2.width < pair.player1.position && pair.player2.position + pair.player2.width > pair.player1.position - pair.player1.attackRange)
+                                        )
+                                    ) ||
+                                (
+                                    pair.player1.direction == 1 &&
+                                    (
+                                        (pair.player2.position - pair.player2.width > pair.player1.position && pair.player2.position - pair.player2.width < pair.player1.position + pair.player1.attackRange) ||
+                                        (pair.player2.position + pair.player2.width > pair.player1.position && pair.player2.position + pair.player2.width < pair.player1.position + pair.player1.attackRange)
+                                        )
+                                    ) ||
+                                (pair.player2.position - pair.player2.width < pair.player1.position && pair.player2.position + pair.player2.width > pair.player1.position)
+                                );
+
+                        bool p2Hitp1 = pair.player2.hitboxActive &&
+                            (
+                                (
+                                    pair.player2.direction == -1 &&
+                                    (
+                                        (pair.player1.position - pair.player1.width < pair.player2.position && pair.player1.position - pair.player1.width > pair.player2.position - pair.player2.attackRange) ||
+                                        (pair.player1.position + pair.player1.width < pair.player2.position && pair.player1.position + pair.player1.width > pair.player2.position - pair.player2.attackRange)
+                                        )
+                                    ) ||
+                                (
+                                    pair.player2.direction == 1 &&
+                                    (
+                                        (pair.player1.position - pair.player1.width > pair.player2.position && pair.player1.position - pair.player1.width < pair.player2.position + pair.player2.attackRange) ||
+                                        (pair.player1.position + pair.player1.width > pair.player2.position && pair.player1.position + pair.player1.width < pair.player2.position + pair.player2.attackRange)
+                                        )
+                                    ) ||
+                                (pair.player2.position - pair.player2.width < pair.player1.position && pair.player2.position + pair.player2.width > pair.player1.position)
+                                );
+
+                        bool swordHit = pair.player1.hitboxActive && pair.player2.hitboxActive &&
+                            (
+                                (
+                                    pair.player1.direction == 1 && pair.player2.direction == -1 &&
+                                    pair.player1.position + pair.player1.attackRange > pair.player2.position - pair.player2.attackRange && pair.player1.position + pair.player1.attackRange < pair.player2.position
+                                    ) ||
+                                (
+                                    pair.player1.direction == -1 && pair.player2.direction == 1 &&
+                                    pair.player1.position - pair.player1.attackRange < pair.player2.position + pair.player2.attackRange && pair.player1.position + pair.player1.attackRange > pair.player2.position
+                                    )
+
+                                );
+
+                        if (p1Hitp2 && !p2Hitp1 && !swordHit)
+                        {
+                            if (pair.player1.attackState == pair.player2.blocking)
+                            {
+                                pair.player2.sprite.setFillColor(sf::Color::Green);
+                                pair.player2.AddForce((pair.player1.attackVelocity / 2) * pair.player1.mass * pair.player1.direction);
+                            }
+                            else
+                            {
+                                pair.player2.sprite.setFillColor(sf::Color::Black);
+                                pair.player2.AddForce((tempVel1 - tempVel2 + pair.player1.attackVelocity * pair.player1.direction) * pair.player1.mass);
+                            }
+                            pair.player1.hitboxActive = false;
+                            pair.player1.velocity = pair.player1.direction * -1 * (pair.player1.attackVelocity);
+                        }
+                        else if (!p1Hitp2 && p2Hitp1 && !swordHit)
+                        {
+                            if (pair.player2.attackState == pair.player1.blocking)
+                            {
+                                pair.player1.sprite.setFillColor(sf::Color::Green);
+
+                                pair.player1.AddForce((pair.player2.attackVelocity / 2) * pair.player2.mass * pair.player2.direction);
+                            }
+                            else
+                            {
+                                pair.player1.sprite.setFillColor(sf::Color::Black);
+                                pair.player1.AddForce((tempVel2 - tempVel1 + pair.player2.attackVelocity * pair.player2.direction) * pair.player2.mass);
+                            }
+                            pair.player2.hitboxActive = false;
+                            pair.player2.velocity = pair.player2.direction * -1 * (pair.player2.attackVelocity);
+                        }
+                        else if (swordHit)
+                        {
+                            pair.player1.hitboxActive = false;
+                            pair.player2.hitboxActive = false;
+                            pair.player1.AddForce(((tempVel1 * pair.player1.direction + pair.player1.attackVelocity) * pair.player2.direction * pair.player1.mass + ((tempVel2 * pair.player2.direction + pair.player2.attackVelocity) * pair.player2.direction) * pair.player2.mass));
+                            pair.player2.AddForce(((tempVel1 * pair.player1.direction + pair.player1.attackVelocity) * pair.player1.direction * pair.player1.mass + ((tempVel2 * pair.player2.direction + pair.player2.attackVelocity) * pair.player1.direction) * pair.player2.mass));
+                        }
                         window.draw(pair.player1.sprite);
                         window.draw(pair.player2.sprite);
                         done = false;
+                    }
+                }
+
+                if (done)
+                {
+                    for each (TrainingPair pair in pairs)
+                    {
+                        pair.player1.Reset();
+                        pair.player2.Reset();
                     }
                 }
             }
