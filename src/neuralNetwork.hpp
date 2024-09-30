@@ -72,14 +72,22 @@ private:
 	std::vector<Layer> layers;
 
 public:
-
+	std::vector<std::vector<sf::CircleShape>> nodes;
 
 	NeuralNetwork(std::vector<int> layerSizes) 
 	{
 		for (int i = 0; i < layerSizes.size() - 1; i++)
 		{
 			layers.push_back(Layer(layerSizes[i], layerSizes[i + 1]));
+			nodes.push_back(std::vector<sf::CircleShape>{});
+			for (int j = 0; j < layerSizes[i]; j++)
+			{
+				nodes[i].push_back(sf::CircleShape(5, 10));
+				nodes[i][j].setFillColor(sf::Color::Green);
+				nodes[i][j].setPosition(sf::Vector2f(i * 15, j * 15));
+			}
 		}
+
 
 		Randomize();
 	}
