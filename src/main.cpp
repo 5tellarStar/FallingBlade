@@ -13,7 +13,7 @@ bool battling = false;
 int winsToWin = 3;
 bool training = true;
 TrainingPair pairs[1] = {TrainingPair()};
-NeuralNetwork ai = NeuralNetwork(std::vector<int>{11, 15, 15, 15, 15, 7});
+
 
 int main()
 {
@@ -220,7 +220,7 @@ int main()
                         }
                         window.draw(pair.player1.sprite);
                         window.draw(pair.player2.sprite);
-                        for each (std::vector<sf::CircleShape> vectors in ai.nodes)
+                        for each (std::vector<sf::CircleShape> vectors in pair.ai.nodes)
                         {
                             for each (sf::CircleShape circle in vectors)
                             {

@@ -80,14 +80,21 @@ public:
 		{
 			layers.push_back(Layer(layerSizes[i], layerSizes[i + 1]));
 			nodes.push_back(std::vector<sf::CircleShape>{});
+
 			for (int j = 0; j < layerSizes[i]; j++)
 			{
-				nodes[i].push_back(sf::CircleShape(5, 10));
-				nodes[i][j].setFillColor(sf::Color::Green);
-				nodes[i][j].setPosition(sf::Vector2f(i * 15, j * 15));
+				nodes[i].push_back(sf::CircleShape(2.5f, 10));
+				nodes[i][j].setPosition(sf::Vector2f(i * 10, j * 10));
 			}
+
 		}
 
+		nodes.push_back(std::vector<sf::CircleShape>{});
+		for (int j = 0; j < layerSizes[4]; j++)
+		{
+			nodes[4].push_back(sf::CircleShape(2.5f, 10));
+			nodes[4][j].setPosition(sf::Vector2f(4 * 10, j * 10));
+		}
 
 		Randomize();
 	}
