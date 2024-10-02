@@ -101,6 +101,21 @@ public:
 	
 	std::vector<double> CalcOutputs(std::vector<double> inputs)
 	{
+		for (int i = 0; i < layers.size()-1; i++)
+		{
+			for (int j = 0; j < inputs.size()-1; j++)
+			{
+				if (inputs[j] > 0)
+				{
+					nodes[i][j].setFillColor(sf::Color::Green);
+				}
+				else
+				{
+					nodes[i][j].setFillColor(sf::Color::Red);
+				}
+			}
+			inputs = layers[i].calcOutputs(inputs);
+		}
 		for each (Layer layer in layers)
 		{
 			inputs = layer.calcOutputs(inputs);
@@ -118,7 +133,7 @@ public:
 				std::vector<double> temp1;
 				for each (double weight in weights)
 				{
-					temp1.push_back(rand() % 10 - 5);
+					temp1.push_back(0);
 				}
 				temp.push_back(temp1);
 			}
@@ -126,7 +141,7 @@ public:
 			std::vector<double> temp1;
 			for each (double bias in layer.biases)
 			{
-				temp1.push_back(rand() % 10 -5);
+				temp1.push_back(1000);
 			}
 			layer.biases = temp1;
 

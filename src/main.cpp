@@ -6,21 +6,29 @@
 #include "baseCharacter.hpp"
 #include "neuralNetwork.hpp"
 #include "trainingPair.hpp"
+#include <string>
 
 
 bool battling = false;
 
 int winsToWin = 3;
 bool training = true;
-TrainingPair pairs[1] = {TrainingPair()};
+std::vector<TrainingPair> pairs;
 
 
 int main()
 {
+    pairs.push_back({ false,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7}) });
     auto window = sf::RenderWindow{ { 512u, 128u }, "Falling Blade" };
     BaseCharacter player1(false);
     BaseCharacter player2(true);
+    sf::Font font;
+    font.loadFromFile("Roboto-Black.ttf");
 
+    // Create a text
+    sf::Text debug("hello", font);
+    debug.setCharacterSize(30);
+    debug.setFillColor(sf::Color::Red);
     sf::Clock globalTime;
 
     for each (TrainingPair pair in pairs)
@@ -42,7 +50,7 @@ int main()
     platformSprite.setTexture(platformTexture);
     platformSprite.setPosition(sf::Vector2f(64, 96));
 
-    sf::View veiw = window.getDefaultView();
+    sf::View view = window.getDefaultView();
     window.setFramerateLimit(144);
     sf::RectangleShape background(sf::Vector2f(512, 128));
     background.setFillColor(sf::Color::White);
@@ -61,8 +69,8 @@ int main()
                 }
                 if (event.type == sf::Event::Resized)
                 {
-                    veiw.setSize(sf::Vector2f(512, 512 * event.size.height / event.size.width));
-                    window.setView(veiw);
+                    view.setSize(sf::Vector2f(512, 512 * event.size.height / event.size.width));
+                    window.setView(view);
                 }
             }
             if (training)
@@ -88,14 +96,13 @@ int main()
                                 pair.player2.velocity,
                                 pair.player1.velocity
                         }));
-                        pair.player1.Input(std::vector<double>{0, 0, 0, 0, 0, 0, 0});
-                        pair.player1.sprite.setFillColor(sf::Color::Blue);
-                        pair.player2.sprite.setFillColor(sf::Color::Red);
+                        pair.player1.Input();
+
                         if (pair.player1.Tick())
                         {
                             pair.player1.ResetInput();
                             pair.player2.ResetInput();
-                            pair.done = true;
+                            pair.done = true;   
                         }
                         if (pair.player2.Tick())
                         {
@@ -103,7 +110,7 @@ int main()
                             pair.player1.ResetInput();
                             pair.player2.ResetInput();
                         }
-
+                        debug.setString(std::to_string(pair.player1.sprite.getFillColor().toInteger()));
 
                         float tempVel1 = pair.player1.velocity;
                         float tempVel2 = pair.player2.velocity;
@@ -224,14 +231,12 @@ int main()
                         {
                             for each (sf::CircleShape circle in vectors)
                             {
-                                circle.setFillColor(sf::Color::Green);
                                 window.draw(circle);
                             }
                         }
                         done = false;
                     }
                 }
-
                 if (done)
                 {
                     for each (TrainingPair pair in pairs)
@@ -389,6 +394,7 @@ int main()
                 window.draw(player1.sprite);
                 window.draw(player2.sprite);
             }
+            window.draw(debug);
             window.display();
         }
 
