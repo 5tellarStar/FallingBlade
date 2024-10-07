@@ -208,6 +208,7 @@ public:
 
 	void SetPosition(float pos)
 	{
+		
 		position = pos;
 		sprite.setPosition(sf::Vector2f(pos - width, top));
 	}
@@ -362,7 +363,6 @@ public:
 				}
 			}
 		
-
 		SetPosition(position + velocity);
 
 		
@@ -388,7 +388,6 @@ public:
 				velocity = 0;
 			}
 		}
-
 		distToEdge1 =  440 - (position - width);
 		distToEdge2 = (position + width) - 72;
 

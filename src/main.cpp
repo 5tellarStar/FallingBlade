@@ -31,11 +31,7 @@ int main()
     debug.setFillColor(sf::Color::Red);
     sf::Clock globalTime;
 
-    for each (TrainingPair pair in pairs)
-    {
-        pair.player1.sprite.setFillColor(sf::Color::Blue);
-        pair.player2.sprite.setFillColor(sf::Color::Red);
-    }
+
 
     sf::Texture titleTexture;
     titleTexture.loadFromFile("title.png");
@@ -76,8 +72,9 @@ int main()
             if (training)
             {
                 bool done = true;
-                for each (TrainingPair pair in pairs)
+                for(int i = 0; i < pairs.size(); i++)
                 {
+                    TrainingPair pair = pairs[i];
                     if (!pair.done)
                     {
                         pair.player2.Input(pair.ai.CalcOutputs(std::vector<double>
@@ -110,7 +107,8 @@ int main()
                             pair.player1.ResetInput();
                             pair.player2.ResetInput();
                         }
-                        debug.setString(std::to_string(pair.player1.sprite.getFillColor().toInteger()));
+
+                        debug.setString(std::to_string(pair.player1.position));
 
                         float tempVel1 = pair.player1.velocity;
                         float tempVel2 = pair.player2.velocity;
@@ -235,14 +233,17 @@ int main()
                             }
                         }
                         done = false;
+                        pairs[i] = pair;
                     }
                 }
                 if (done)
                 {
-                    for each (TrainingPair pair in pairs)
+                    for (int i = 0; i < pairs.size(); i++)
                     {
+                        TrainingPair pair = pairs[i];
                         pair.player1.Reset();
                         pair.player2.Reset();
+                        pairs[i] = pair;
                     }
                 }
             }
