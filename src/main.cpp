@@ -18,7 +18,10 @@ std::vector<TrainingPair> pairs;
 
 int main()
 {
+    for (int i = 0; i < 500; i++)
+    {
     pairs.push_back({ true,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7}) });
+    }
     auto window = sf::RenderWindow{ { 512u, 128u }, "Falling Blade" };
     BaseCharacter player1(false);
     BaseCharacter player2(true);
@@ -241,9 +244,9 @@ int main()
                     for (int i = 0; i < pairs.size(); i++)
                     {
                         TrainingPair pair = pairs[i];
-                        pair.ai.Randomize();
                         pair.player1.Reset();
                         pair.player2.Reset();
+                        pair.done = false;
                         pairs[i] = pair;
                     }
                 }
