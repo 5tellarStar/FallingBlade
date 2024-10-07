@@ -38,13 +38,13 @@ public:
 			std::vector<double> weight;
 			for (int i = 0; i < numNodesOut; i++)
 			{
-				weight.push_back(0);
+				weight.push_back((rand() % 10) - 5);
 			}
 			weights.push_back(weight);
 		}
 		for (int i = 0; i < numNodesOut; i++)
 		{
-			biases.push_back(0);
+			biases.push_back((rand() % 10) - 5);
 		}
 	}
 	std::vector<double> calcOutputs(std::vector<double> inputs)
@@ -96,7 +96,6 @@ public:
 			nodes[4][j].setPosition(sf::Vector2f(4 * 10, j * 10));
 		}
 
-		Randomize();
 	}
 	
 	std::vector<double> CalcOutputs(std::vector<double> inputs)
@@ -133,7 +132,7 @@ public:
 				std::vector<double> temp1;
 				for each (double weight in weights)
 				{
-					temp1.push_back(0);
+					temp1.push_back((rand() % 10)-5);
 				}
 				temp.push_back(temp1);
 			}
