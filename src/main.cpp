@@ -10,15 +10,16 @@
 
 
 bool battling = false;
-
+bool first = true;
 int winsToWin = 3;
 bool training = true;
 std::vector<TrainingPair> pairs;
+NeuralNetwork bestAi(std::vector<int>{13, 20, 20, 20, 7});
 
 
 int main()
 {
-    for (int i = 0; i < 500; i++)
+    for (int i = 0; i < 50; i++)
     {
     pairs.push_back({ true,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7}) });
     }
@@ -33,7 +34,7 @@ int main()
     debug.setCharacterSize(30);
     debug.setFillColor(sf::Color::Red);
     sf::Clock globalTime;
-
+    sf::Clock trainingTime;
 
 
     sf::Texture titleTexture;
@@ -102,6 +103,7 @@ int main()
                         {
                             pair.player1.ResetInput();
                             pair.player2.ResetInput();
+                            pair.rewards += 10;
                             pair.done = true;   
                         }
                         if (pair.player2.Tick())
@@ -110,7 +112,7 @@ int main()
                             pair.player1.ResetInput();
                             pair.player2.ResetInput();
                         }
-
+                        pair.rewards -= (pair.player2.position - pair.player1.position) * 0.000001;
                         debug.setString(std::to_string(pair.player1.position));
 
                         float tempVel1 = pair.player1.velocity;
@@ -238,17 +240,44 @@ int main()
                         done = false;
                         pairs[i] = pair;
                     }
+                    
+                }
+                if (trainingTime.getElapsedTime().asSeconds() > 60.f)
+                {
+                    for (int i = 0; i < pairs.size(); i++)
+                    {
+                        TrainingPair pair = pairs[i];
+                        pair.done = true;
+                        pairs[i] = pair;
+                    }
+                    trainingTime.restart();
                 }
                 if (done)
                 {
+                    double highestReward = -1;
                     for (int i = 0; i < pairs.size(); i++)
                     {
                         TrainingPair pair = pairs[i];
                         pair.player1.Reset();
                         pair.player2.Reset();
                         pair.done = false;
+                        if (pair.rewards > highestReward)
+                        {
+                            highestReward = pair.rewards;
+                            bestAi = pair.ai;
+                        }
                         pairs[i] = pair;
                     }
+                    if (!first)
+                    {
+                        for (int i = 0; i < pairs.size(); i++)
+                        {
+                            TrainingPair pair = pairs[i];
+                            pair.ai = bestAi;
+                            pairs[i] = pair;
+                        }
+                    }
+                    first = false;
                 }
             }
             else
