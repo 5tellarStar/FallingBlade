@@ -69,9 +69,9 @@ public:
 class NeuralNetwork
 {
 private:
-	std::vector<Layer> layers;
 
 public:
+	std::vector<Layer> layers;
 	std::vector<std::vector<sf::CircleShape>> nodes;
 
 	NeuralNetwork(std::vector<int> layerSizes) 

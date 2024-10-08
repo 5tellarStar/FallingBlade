@@ -19,7 +19,7 @@ NeuralNetwork bestAi(std::vector<int>{13, 20, 20, 20, 7});
 
 int main()
 {
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < 100; i++)
     {
     pairs.push_back({ true,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7}) });
     }
@@ -103,7 +103,7 @@ int main()
                         {
                             pair.player1.ResetInput();
                             pair.player2.ResetInput();
-                            pair.rewards += 10;
+                            pair.rewards += 100;
                             pair.done = true;   
                         }
                         if (pair.player2.Tick())
@@ -111,6 +111,11 @@ int main()
                             pair.done = true;
                             pair.player1.ResetInput();
                             pair.player2.ResetInput();
+                        }
+
+                        if (pair.player2.attackFrame - 1 == pair.player2.firstActiveAttackFrame)
+                        {
+                            pair.rewards += (262144 - (pair.player2.position - pair.player1.position) * (pair.player2.position - pair.player1.position)) * 0.001;
                         }
                         pair.rewards -= (pair.player2.position - pair.player1.position) * 0.000001;
                         debug.setString(std::to_string(pair.player1.position));
@@ -273,7 +278,10 @@ int main()
                         for (int i = 0; i < pairs.size(); i++)
                         {
                             TrainingPair pair = pairs[i];
-                            pair.ai = bestAi;
+                            for (int j = 0; j < pair.ai.layers.size(); j++)
+                            {
+                                for (int k = 0; k < pair.ai.layers[j].weights.size(); k++);
+                            }
                             pairs[i] = pair;
                         }
                     }
