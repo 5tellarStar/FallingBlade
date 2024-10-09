@@ -18,13 +18,13 @@ std::vector<TrainingPair> pairs;
 NeuralNetwork bestAi(std::vector<int>{13, 20, 20, 20, 7});
 
 std::default_random_engine rnd{ std::random_device{}() };
-std::uniform_real_distribution<double> dist(-0.1, 0.1);
+std::uniform_real_distribution<double> dist(-0.5, 0.5);
 
 int main()
 {
     for (int i = 0; i < 100; i++)
     {
-        pairs.push_back({ true,0,512,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7}),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7}) });
+        pairs.push_back({ true,0,0,512,0,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7}),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7})});
     }
     auto window = sf::RenderWindow{ { 512u, 128u }, "Falling Blade" };
     BaseCharacter player1(false);
@@ -102,10 +102,10 @@ int main()
                         }));
                         pair.player1.Input(pair.ai1.CalcOutputs(std::vector<double>
                         {
-                            pair.player1.distToEdge1,
                                 pair.player1.distToEdge2,
-                                pair.player2.distToEdge1,
+                            pair.player1.distToEdge1,
                                 pair.player2.distToEdge2,
+                                pair.player2.distToEdge1,
                                 pair.player1.position - pair.player2.position,
                                 pair.player1.dodges,
                                 pair.player2.dodges,
@@ -122,14 +122,14 @@ int main()
                             pair.done = true;   
                             pair.player1.ResetInput();
                             pair.player2.ResetInput();
-                            pair.rewards2 += 1000*(30 - trainingTime.getElapsedTime().asSeconds());
+                            pair.rewards1 -= 1000;
                         }
                         if (pair.player2.Tick())
                         {
                             pair.done = true;
                             pair.player1.ResetInput();
                             pair.player2.ResetInput();
-                            pair.rewards1 += 1000 * (30 - trainingTime.getElapsedTime().asSeconds());
+                            pair.rewards2 -= 1000;
                         }
 
                         if (pair.player2.attackFrame - 1 == pair.player2.firstActiveAttackFrame)
@@ -312,8 +312,8 @@ int main()
                         pair.player1.Reset();
                         pair.player2.Reset();
                         pair.done = false;
-                        pair.rewards1 += pair.fastestVelocity1 * 100;
-                        pair.rewards2 += pair.fastestVelocity2 * 100;
+                        pair.rewards1 += pair.fastestVelocity1 * 10;
+                        pair.rewards2 += pair.fastestVelocity2 * 10;
                         pair.rewards2 += (512 - pair.closestDist);
                         pair.rewards1 += (512 - pair.closestDist);
                         if (pair.rewards1 > highestReward)
@@ -328,6 +328,7 @@ int main()
                         }
                         debug.setString(std::to_string(highestReward));
                         pair.rewards1 = 0;
+                        pair.rewards2 = 0;
                         pair.closestDist = 512;
                         pair.fastestVelocity1 = 0;
                         pair.fastestVelocity2 = 0;
@@ -356,6 +357,25 @@ int main()
                                     layer.biases[k] += dist(rnd);
                                 }
                                 pair.ai1.layers[j] = layer;
+                            }
+
+                            for (int j = 0; j < pair.ai2.layers.size(); j++)
+                            {
+                                Layer layer = pair.ai2.layers[j];
+                                for (int k = 0; k < layer.weights.size(); k++)
+                                {
+                                    std::vector<double> weights = layer.weights[k];
+                                    for (int l = 0; l < weights.size(); l++)
+                                    {
+                                        weights[l] += dist(rnd);
+                                    }
+                                    layer.weights[k] = weights;
+                                }
+                                for (int k = 0; k < layer.biases.size(); k++)
+                                {
+                                    layer.biases[k] += dist(rnd);
+                                }
+                                pair.ai2.layers[j] = layer;
                             }
                             pairs[i] = pair;
                         }

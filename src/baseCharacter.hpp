@@ -156,17 +156,35 @@ public:
 			inputVertical = 0;
 		}
 
-		if (inputs[2] > 0.9 && inputs[3] < 0.9)
+		if (player2)
 		{
-			inputHorizontal = 1;
-		}
-		else if (inputs[2] < 0.9 && inputs[3] > 0.9)
-		{
-			inputHorizontal = -1;
+			if (inputs[2] > 0.9 && inputs[3] < 0.9)
+			{
+				inputHorizontal = 1;
+			}
+			else if (inputs[2] < 0.9 && inputs[3] > 0.9)
+			{
+				inputHorizontal = -1;
+			}
+			else
+			{
+				inputHorizontal = 0;
+			}
 		}
 		else
 		{
-			inputHorizontal = 0;
+			if (inputs[2] < 0.9 && inputs[3] > 0.9)
+			{
+				inputHorizontal = 1;
+			}
+			else if (inputs[2] > 0.9 && inputs[3] < 0.9)
+			{
+				inputHorizontal = -1;
+			}
+			else
+			{
+				inputHorizontal = 0;
+			}
 		}
 
 		inputAttack = inputs[4] > 0.9;
