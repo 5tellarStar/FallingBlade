@@ -14,9 +14,13 @@
 struct TrainingPair
 {
 	bool done;
-	double rewards;
+	double rewards1;
+	double rewards2;
 	float closestDist;
+	float fastestVelocity1;
+	float fastestVelocity2;
 	BaseCharacter player1;
 	BaseCharacter player2;
-	NeuralNetwork ai;
+	NeuralNetwork ai1;
+	NeuralNetwork ai2;
 };
