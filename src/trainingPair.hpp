@@ -15,6 +15,7 @@ struct TrainingPair
 {
 	bool done;
 	double rewards;
+	float closestDist;
 	BaseCharacter player1;
 	BaseCharacter player2;
 	NeuralNetwork ai;

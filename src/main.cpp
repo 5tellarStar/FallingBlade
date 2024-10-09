@@ -7,21 +7,24 @@
 #include "neuralNetwork.hpp"
 #include "trainingPair.hpp"
 #include <string>
-
+#include <random>
 
 bool battling = false;
 bool first = true;
 int winsToWin = 3;
 bool training = true;
+double highestReward = -1;
 std::vector<TrainingPair> pairs;
 NeuralNetwork bestAi(std::vector<int>{13, 20, 20, 20, 7});
 
+std::default_random_engine rnd{ std::random_device{}() };
+std::uniform_real_distribution<double> dist(-0.5, 0.5);
 
 int main()
 {
     for (int i = 0; i < 100; i++)
     {
-    pairs.push_back({ true,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7}) });
+    pairs.push_back({ true,0,512,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7}) });
     }
     auto window = sf::RenderWindow{ { 512u, 128u }, "Falling Blade" };
     BaseCharacter player1(false);
@@ -103,22 +106,27 @@ int main()
                         {
                             pair.player1.ResetInput();
                             pair.player2.ResetInput();
-                            pair.rewards += 100;
+                            pair.rewards += 1000*(30 - trainingTime.getElapsedTime().asSeconds());
                             pair.done = true;   
+                            pair.rewards += 0.5*(512 - pair.closestDist);
                         }
                         if (pair.player2.Tick())
                         {
                             pair.done = true;
                             pair.player1.ResetInput();
                             pair.player2.ResetInput();
+                            pair.rewards += 512 - pair.closestDist;
                         }
 
                         if (pair.player2.attackFrame - 1 == pair.player2.firstActiveAttackFrame)
                         {
-                            pair.rewards += (262144 - (pair.player2.position - pair.player1.position) * (pair.player2.position - pair.player1.position)) * 0.001;
+                            pair.rewards += 512 - fabs(pair.player2.position - pair.player1.position);
                         }
-                        pair.rewards -= (pair.player2.position - pair.player1.position) * 0.000001;
-                        debug.setString(std::to_string(pair.player1.position));
+                        if (fabs(pair.player2.position - pair.player1.position) < pair.closestDist)
+                        {
+                            pair.closestDist = fabs(pair.player2.position - pair.player1.position);
+                        }
+                        
 
                         float tempVel1 = pair.player1.velocity;
                         float tempVel2 = pair.player2.velocity;
@@ -217,11 +225,13 @@ int main()
                                 pair.player1.sprite.setFillColor(sf::Color::Green);
 
                                 pair.player1.AddForce((pair.player2.attackVelocity / 2) * pair.player2.mass * pair.player2.direction);
+                                pair.rewards += 1000;
                             }
                             else
                             {
                                 pair.player1.sprite.setFillColor(sf::Color::Black);
                                 pair.player1.AddForce((tempVel2 - tempVel1 + pair.player2.attackVelocity * pair.player2.direction) * pair.player2.mass);
+                                pair.rewards += 3000;
                             }
                             pair.player2.hitboxActive = false;
                             pair.player2.velocity = pair.player2.direction * -1 * (pair.player2.attackVelocity);
@@ -247,19 +257,23 @@ int main()
                     }
                     
                 }
-                if (trainingTime.getElapsedTime().asSeconds() > 60.f)
+                if (trainingTime.getElapsedTime().asSeconds() > 30.f)
                 {
                     for (int i = 0; i < pairs.size(); i++)
                     {
                         TrainingPair pair = pairs[i];
+                        if (!pair.done)
+                        {
+                        pair.rewards += 0.5 * (512 - pair.closestDist);
                         pair.done = true;
+                        }
                         pairs[i] = pair;
                     }
                     trainingTime.restart();
                 }
                 if (done)
                 {
-                    double highestReward = -1;
+                    trainingTime.restart();
                     for (int i = 0; i < pairs.size(); i++)
                     {
                         TrainingPair pair = pairs[i];
@@ -271,6 +285,8 @@ int main()
                             highestReward = pair.rewards;
                             bestAi = pair.ai;
                         }
+                        debug.setString(std::to_string(highestReward));
+                        pair.rewards = 0;
                         pairs[i] = pair;
                     }
                     if (!first)
@@ -278,9 +294,24 @@ int main()
                         for (int i = 0; i < pairs.size(); i++)
                         {
                             TrainingPair pair = pairs[i];
+                            pair.ai = bestAi;
                             for (int j = 0; j < pair.ai.layers.size(); j++)
                             {
-                                for (int k = 0; k < pair.ai.layers[j].weights.size(); k++);
+                                Layer layer = pair.ai.layers[j];
+                                for (int k = 0; k < layer.weights.size(); k++)
+                                {
+                                    std::vector<double> weights = layer.weights[k];
+                                    for (int l = 0; l < weights.size(); l++)
+                                    {
+                                        weights[l] += dist(rnd);
+                                    }
+                                    layer.weights[k] = weights;
+                                }
+                                for (int k = 0; k < layer.biases.size(); k++)
+                                {
+                                    layer.biases[k] += dist(rnd);
+                                }
+                                pair.ai.layers[j] = layer;
                             }
                             pairs[i] = pair;
                         }
