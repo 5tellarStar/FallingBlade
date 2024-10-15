@@ -18,13 +18,13 @@ std::vector<TrainingPair> pairs;
 NeuralNetwork bestAi(std::vector<int>{13, 20, 20, 20, 7});
 
 std::default_random_engine rnd{ std::random_device{}() };
-std::uniform_real_distribution<double> dist(-0.5, 0.5);
+std::uniform_real_distribution<double> dist(-0.2, 0.2);
 
 int main()
 {
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 50; i++)
     {
-        pairs.push_back({ true,0,0,512,0,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7}),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7})});
+        pairs.push_back({ true,0,0,512,0,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 100, 100, 100, 100, 100, 7}),NeuralNetwork(std::vector<int>{13,100, 100, 100, 100, 100, 7})});
     }
     auto window = sf::RenderWindow{ { 512u, 128u }, "Falling Blade" };
     BaseCharacter player1(false);
@@ -155,6 +155,14 @@ int main()
                         if (fabs(pair.player1.velocity) > pair.fastestVelocity1)
                         {
                             pair.fastestVelocity1 = fabs(pair.player1.velocity);
+                        }
+                        if (pair.player1.velocity == 0)
+                        {
+                            pair.rewards1 -= 1;
+                        }                        
+                        if (pair.player2.velocity == 0)
+                        {
+                            pair.rewards2 -= 1;
                         }
 
                         float tempVel1 = pair.player1.velocity;
@@ -340,23 +348,30 @@ int main()
                         {
                             TrainingPair pair = pairs[i];
                             pair.ai1 = bestAi;
+                            pair.ai2 = bestAi;
                             for (int j = 0; j < pair.ai1.layers.size(); j++)
                             {
                                 Layer layer = pair.ai1.layers[j];
+                                Layer layer2 = pair.ai2.layers[j];
                                 for (int k = 0; k < layer.weights.size(); k++)
                                 {
                                     std::vector<double> weights = layer.weights[k];
+                                    std::vector<double> weights2 = layer2.weights[k];
                                     for (int l = 0; l < weights.size(); l++)
                                     {
                                         weights[l] += dist(rnd);
+                                        weights2[l] += dist(rnd);
                                     }
                                     layer.weights[k] = weights;
+                                    layer2.weights[k] = weights2;
                                 }
                                 for (int k = 0; k < layer.biases.size(); k++)
                                 {
                                     layer.biases[k] += dist(rnd);
+                                    layer2.biases[k] += dist(rnd);
                                 }
                                 pair.ai1.layers[j] = layer;
+                                pair.ai2.layers[j] = layer2;
                             }
 
                             for (int j = 0; j < pair.ai2.layers.size(); j++)
