@@ -41,8 +41,8 @@ public:
 	float gravity = 0;
 
 	bool canWalk = true;
-	float walkSpeed = 2;
-	float walkSpeedMax = 5;
+	float walkSpeed = 1;
+	float walkSpeedMax = 1;
 	float friction = 0.8f;
 
 	sf::RectangleShape sprite;
@@ -53,7 +53,7 @@ public:
 	
 	bool canDodge = true;
 	bool isDodging = false;
-	float dodgeForce = 10;
+	float dodgeForce = 7;
 	float dodges = 3;
 	float MaxDodges = 3;
 	float dodgeCharge = 0.042f;
@@ -324,11 +324,6 @@ public:
 				{
 					dodges -= 1;
 					canDodge = false;
-					isAttacking = false;
-					isCharging = false;
-					canAttack = true;
-					canBlock = true;
-					canWalk = true;
 					if ((inputHorizontal < 0 && velocity > 0) || (inputHorizontal > 0 && velocity < 0))
 					{
 						velocity = 0;

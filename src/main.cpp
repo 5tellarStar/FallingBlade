@@ -12,7 +12,7 @@
 bool battling = false;
 bool first = true;
 int winsToWin = 3;
-bool training = true;
+bool training = false;
 double highestReward = -1;
 std::vector<TrainingPair> pairs;
 NeuralNetwork bestAi(std::vector<int>{13, 20, 20, 20, 7});
