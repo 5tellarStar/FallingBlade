@@ -43,7 +43,7 @@ public:
 	bool canWalk = true;
 	float walkSpeed = 2;
 	float walkSpeedMax = 5;
-	float friction = 1;
+	float friction = 0.8f;
 
 	sf::RectangleShape sprite;
 

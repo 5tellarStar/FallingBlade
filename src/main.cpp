@@ -18,13 +18,13 @@ std::vector<TrainingPair> pairs;
 NeuralNetwork bestAi(std::vector<int>{13, 20, 20, 20, 7});
 
 std::default_random_engine rnd{ std::random_device{}() };
-std::uniform_real_distribution<double> dist(-0.25, 0.25);
+std::uniform_real_distribution<double> dist(-0.2, 0.2);
 
 int main()
 {
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 50; i++)
     {
-        pairs.push_back({ true,0,0,512,0,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{15, 50, 50, 50, 50, 7}),NeuralNetwork(std::vector<int>{15, 50, 50, 50, 50,7})});
+        pairs.push_back({ true,0,0,512,0,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 100, 100, 100, 100, 100, 7}),NeuralNetwork(std::vector<int>{13,100, 100, 100, 100, 100, 7})});
     }
     auto window = sf::RenderWindow{ { 512u, 128u }, "Falling Blade" };
     BaseCharacter player1(false);
@@ -86,7 +86,7 @@ int main()
                     {
                         pair.player2.Input(pair.ai2.CalcOutputs(std::vector<double>
                         {
-                                pair.player2.distToEdge1,
+                            pair.player2.distToEdge1,
                                 pair.player2.distToEdge2,
                                 pair.player1.distToEdge1,
                                 pair.player1.distToEdge2,
@@ -98,14 +98,12 @@ int main()
                                 (double)pair.player2.firstActiveAttackFrame - pair.player2.attackFrame,
                                 (double)pair.player1.firstActiveAttackFrame - pair.player1.attackFrame,
                                 pair.player1.velocity,
-                                pair.player2.velocity,
-                                pair.player1.charge,
-                                pair.player2.charge
+                                pair.player2.velocity
                         }));
                         pair.player1.Input(pair.ai1.CalcOutputs(std::vector<double>
                         {
                                 pair.player1.distToEdge2,
-                                pair.player1.distToEdge1,
+                            pair.player1.distToEdge1,
                                 pair.player2.distToEdge2,
                                 pair.player2.distToEdge1,
                                 pair.player1.position - pair.player2.position,
@@ -116,9 +114,7 @@ int main()
                                 (double)pair.player1.firstActiveAttackFrame - pair.player1.attackFrame,
                                 (double)pair.player2.firstActiveAttackFrame - pair.player2.attackFrame,
                                 pair.player1.velocity,
-                                pair.player2.velocity,
-                                pair.player2.charge,
-                                pair.player1.charge
+                                pair.player2.velocity
                         }));
 
                         if (pair.player1.Tick())
@@ -126,16 +122,25 @@ int main()
                             pair.done = true;   
                             pair.player1.ResetInput();
                             pair.player2.ResetInput();
-                            pair.rewards1 -= 4000;
+                            pair.rewards1 -= 1000;
                         }
                         if (pair.player2.Tick())
                         {
                             pair.done = true;
                             pair.player1.ResetInput();
                             pair.player2.ResetInput();
-                            pair.rewards2 -= 4000;
+                            pair.rewards2 -= 1000;
                         }
 
+                        if (pair.player2.attackFrame - 1 == pair.player2.firstActiveAttackFrame)
+                        {
+                            pair.rewards2 += 512 - fabs(pair.player2.position - pair.player1.position);
+                        }
+
+                        if (pair.player1.attackFrame - 1 == pair.player1.firstActiveAttackFrame)
+                        {
+                            pair.rewards1 += 512 - fabs(pair.player2.position - pair.player1.position);
+                        }
 
                         if (fabs(pair.player2.position - pair.player1.position) < pair.closestDist)
                         {
@@ -151,11 +156,10 @@ int main()
                         {
                             pair.fastestVelocity1 = fabs(pair.player1.velocity);
                         }
-
                         if (pair.player1.velocity == 0)
                         {
                             pair.rewards1 -= 1;
-                        }
+                        }                        
                         if (pair.player2.velocity == 0)
                         {
                             pair.rewards2 -= 1;
@@ -242,7 +246,6 @@ int main()
                             {
                                 pair.player2.sprite.setFillColor(sf::Color::Green);
                                 pair.player2.AddForce((pair.player1.attackVelocity / 2) * pair.player1.mass * pair.player1.direction);
-                                pair.rewards2 += 100;
                                 pair.rewards1 += 1000;
                             }
                             else
@@ -250,7 +253,6 @@ int main()
                                 pair.player2.sprite.setFillColor(sf::Color::Black);
                                 pair.player2.AddForce((tempVel1 - tempVel2 + pair.player1.attackVelocity * pair.player1.direction) * pair.player1.mass);
                                 pair.rewards1 += 3000;
-                                pair.rewards2 -= 1000;
                             }
                             pair.player1.hitboxActive = false;
                             pair.player1.velocity = pair.player1.direction * -1 * (pair.player1.attackVelocity);
@@ -262,7 +264,6 @@ int main()
                                 pair.player1.sprite.setFillColor(sf::Color::Green);
 
                                 pair.player1.AddForce((pair.player2.attackVelocity / 2) * pair.player2.mass * pair.player2.direction);
-                                pair.rewards1 += 100;
                                 pair.rewards2 += 1000;
                             }
                             else
@@ -270,7 +271,6 @@ int main()
                                 pair.player1.sprite.setFillColor(sf::Color::Black);
                                 pair.player1.AddForce((tempVel2 - tempVel1 + pair.player2.attackVelocity * pair.player2.direction) * pair.player2.mass);
                                 pair.rewards2 += 3000;
-                                pair.rewards1 -= 1000;
                             }
                             pair.player2.hitboxActive = false;
                             pair.player2.velocity = pair.player2.direction * -1 * (pair.player2.attackVelocity);
@@ -348,23 +348,30 @@ int main()
                         {
                             TrainingPair pair = pairs[i];
                             pair.ai1 = bestAi;
+                            pair.ai2 = bestAi;
                             for (int j = 0; j < pair.ai1.layers.size(); j++)
                             {
                                 Layer layer = pair.ai1.layers[j];
+                                Layer layer2 = pair.ai2.layers[j];
                                 for (int k = 0; k < layer.weights.size(); k++)
                                 {
                                     std::vector<double> weights = layer.weights[k];
+                                    std::vector<double> weights2 = layer2.weights[k];
                                     for (int l = 0; l < weights.size(); l++)
                                     {
                                         weights[l] += dist(rnd);
+                                        weights2[l] += dist(rnd);
                                     }
                                     layer.weights[k] = weights;
+                                    layer2.weights[k] = weights2;
                                 }
                                 for (int k = 0; k < layer.biases.size(); k++)
                                 {
                                     layer.biases[k] += dist(rnd);
+                                    layer2.biases[k] += dist(rnd);
                                 }
                                 pair.ai1.layers[j] = layer;
+                                pair.ai2.layers[j] = layer2;
                             }
 
                             for (int j = 0; j < pair.ai2.layers.size(); j++)
