@@ -67,7 +67,7 @@ public:
 	int attackFrame = 0;
 	float charge = 0;
 	float chargeSpeed = 1;
-	float maxCharge = 15;
+	float maxCharge = 7;
 
 	float staminaUse = 1.f;
 	float staminaRegain = 0.1f;

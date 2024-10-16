@@ -405,7 +405,7 @@ int main()
                 if (!player1.dead && !player2.dead)
                 {
                     player1.Input();
-
+                    player2.Input();
                 }
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
                 {
