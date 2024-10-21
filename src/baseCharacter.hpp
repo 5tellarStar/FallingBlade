@@ -49,6 +49,7 @@ public:
 
 	bool canBlock = true;
 	int blocking = 0;
+	bool blocked = false;
 
 	
 	bool canDodge = true;
@@ -260,11 +261,24 @@ public:
 			{
 				if (!isCharging && canAttack)
 				{
-					canBlock = false;
-					isCharging = true;
-					canAttack = false;
-					canTurn = false;
-					sprite.setFillColor(sf::Color::Red);
+					if (blocked)
+					{
+						attackState = inputVertical;
+						canWalk = false;
+						isAttacking = true;
+						isCharging = false;
+						AddForce(2 * inputHorizontal);
+						charge = 0;
+						attackFrame = firstActiveAttackFrame;
+					}
+					else
+					{
+						canBlock = false;
+						isCharging = true;
+						canAttack = false;
+						canTurn = false;
+						sprite.setFillColor(sf::Color::Red);
+					}
 				}
 				if (isCharging && charge < maxCharge)
 				{
@@ -405,7 +419,7 @@ public:
 		distToEdge2 = (position + width) - 72;
 
 		
-
+		blocked = false;
 		if (distToEdge1 <= 0 || distToEdge2 <= 0)
 		{
 			sprite.setFillColor(sf::Color::Magenta);

@@ -415,6 +415,7 @@ int main()
 
                 if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f))
                 {
+                    /*
                     player2.Input(bestAi.CalcOutputs(std::vector<double>
                     {
                         player2.distToEdge1,
@@ -431,6 +432,7 @@ int main()
                             player2.velocity,
                             player1.velocity
                     }));
+                    */
                     if (player1.Tick())
                     {
                         player1.ResetInput();
