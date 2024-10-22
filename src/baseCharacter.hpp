@@ -240,7 +240,11 @@ public:
 
 	void Skill()
 	{
-
+		if (inputSkill)
+		{
+			hitboxActive = true;
+			attackState = 2;
+		}
 	}
 
 	void ResetInput()

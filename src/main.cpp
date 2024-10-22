@@ -9,6 +9,7 @@
 #include <string>
 #include <random>
 
+int ImpactFrame = 0;
 bool battling = false;
 bool first = true;
 int winsToWin = 3;
@@ -413,7 +414,7 @@ int main()
                     player2.Reset();
                 }
 
-                if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f))
+                if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f) && ImpactFrame == 0)
                 {
                     /*
                     player2.Input(bestAi.CalcOutputs(std::vector<double>
@@ -523,34 +524,51 @@ int main()
 
                     if (p1Hitp2 && !p2Hitp1 && !swordHit)
                     {
-                        if (player1.attackState == player2.blocking)
+                        if (player1.attackState == 2)
                         {
-                            player2.sprite.setFillColor(sf::Color::Green);
-                            player2.AddForce((player1.attackVelocity / 2) * player1.mass * player1.direction);
+                            player2.AddForce((-player1.direction)*8);
                         }
                         else
                         {
-                            player2.sprite.setFillColor(sf::Color::Black);
-                            player2.AddForce((tempVel1 - tempVel2 + player1.attackVelocity * player1.direction) * player1.mass);
+                            if (player1.attackState == player2.blocking)
+                            {
+                                player2.sprite.setFillColor(sf::Color::Green);
+                                player2.AddForce((player1.attackVelocity / 2) * player1.mass * player1.direction);
+                                player2.blocked = true;
+                            }
+                            else
+                            {
+                                player2.sprite.setFillColor(sf::Color::Black);
+                                player2.AddForce((tempVel1 - tempVel2 + player1.attackVelocity * player1.direction) * player1.mass);
+                            }
+                        player1.velocity = player1.direction * -1 * (player1.attackVelocity);
+                        ImpactFrame = 5;
                         }
                         player1.hitboxActive = false;
-                        player1.velocity = player1.direction * -1 * (player1.attackVelocity);
                     }
                     else if (!p1Hitp2 && p2Hitp1 && !swordHit)
                     {
-                        if (player2.attackState == player1.blocking)
+                        if (player2.attackState == 2)
                         {
-                            player1.sprite.setFillColor(sf::Color::Green);
-
-                            player1.AddForce((player2.attackVelocity / 2) * player2.mass * player2.direction);
+                            player2.AddForce((-player1.direction) * 8);
                         }
                         else
                         {
-                            player1.sprite.setFillColor(sf::Color::Black);
-                            player1.AddForce((tempVel2 - tempVel1 + player2.attackVelocity * player2.direction) * player2.mass);
+                            if (player2.attackState == player1.blocking)
+                            {
+                                player1.sprite.setFillColor(sf::Color::Green);
+                                player1.AddForce((player2.attackVelocity / 2) * player2.mass * player2.direction);
+                                player1.blocked = true;
+                            }
+                            else
+                            {
+                                player1.sprite.setFillColor(sf::Color::Black);
+                                player1.AddForce((tempVel2 - tempVel1 + player2.attackVelocity * player2.direction) * player2.mass);
+                            }
+                        player2.velocity = player2.direction * -1 * (player2.attackVelocity);
+                        ImpactFrame = 5;
                         }
                         player2.hitboxActive = false;
-                        player2.velocity = player2.direction * -1 * (player2.attackVelocity);
                     }
                     else if (swordHit)
                     {
@@ -558,9 +576,18 @@ int main()
                         player2.hitboxActive = false;
                         player1.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player2.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player2.direction) * player2.mass));
                         player2.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player1.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player1.direction) * player2.mass));
+                        ImpactFrame = 5;
                     }
 
                     globalTime.restart();
+                }
+                else
+                {
+                    if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f))
+                    {
+                        ImpactFrame--;
+                        globalTime.restart();
+                    }
                 }
                 window.draw(player1.sprite);
                 window.draw(player2.sprite);
