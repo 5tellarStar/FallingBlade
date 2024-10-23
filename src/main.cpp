@@ -8,6 +8,7 @@
 #include "trainingPair.hpp"
 #include <string>
 #include <random>
+#include <fstream>
 
 int ImpactFrame = 0;
 bool battling = false;
@@ -58,6 +59,10 @@ int main()
     window.setFramerateLimit(144);
     sf::RectangleShape background(sf::Vector2f(512, 128));
     background.setFillColor(sf::Color::White);
+
+    std::ofstream trainingData1("trainingData1.txt");
+    std::ofstream trainingData2("trainingData2.txt");
+
     while (window.isOpen())
     {
         while ((player1.winCount < winsToWin && player2.winCount < winsToWin) || !sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
@@ -426,14 +431,21 @@ int main()
                             player2.position - player1.position,
                             player2.dodges,
                             player1.dodges,
-                            (double)player1.blocking,
                             (double)player2.blocking,
+                            (double)player1.blocking,
                             (double)player1.firstActiveAttackFrame - player1.attackFrame,
                             (double)player1.firstActiveAttackFrame - player1.attackFrame,
                             player2.velocity,
                             player1.velocity
                     }));
                     */
+
+                    if (!first)
+                    {
+                        trainingData2 << 
+                            (player2.inputVertical+2)+"\n";
+                    }
+                    first = false;
                     if (player1.Tick())
                     {
                         player1.ResetInput();
@@ -579,6 +591,25 @@ int main()
                         ImpactFrame = 5;
                     }
 
+
+                    trainingData2 << 
+                        std::to_string(player2.distToEdge1) + 
+                        std::to_string(player2.distToEdge2) +
+                        std::to_string(player1.distToEdge1) +
+                        std::to_string(player1.distToEdge2) +
+                        std::to_string(player2.position - player1.position) +
+                        std::to_string(player2.dodges) +
+                        std::to_string(player1.dodges) +
+                        std::to_string((double)player2.blocking) +
+                        std::to_string((double)player1.blocking) +
+                        std::to_string((double)player2.firstActiveAttackFrame - player2.attackFrame) +
+                        std::to_string((double)player1.firstActiveAttackFrame - player1.attackFrame) +
+                        std::to_string((double)player2.firstActiveGrabFrame - player2.grabFrame) +
+                        std::to_string((double)player1.firstActiveGrabFrame - player1.grabFrame) +
+                        std::to_string(player2.velocity) +
+                        std::to_string(player1.velocity)
+                        ;
+
                     globalTime.restart();
                 }
                 else
@@ -599,4 +630,5 @@ int main()
         window.clear();
         window.display();
     }
+    trainingData2.close();
 }

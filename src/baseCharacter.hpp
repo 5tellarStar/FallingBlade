@@ -70,6 +70,12 @@ public:
 	float chargeSpeed = 1;
 	float maxCharge = 7;
 
+	bool isGrabing = false;
+	bool canGrab = true;
+	int grabFrame = 0;
+	int grabFrames = 5;
+	int firstActiveGrabFrame = 2;
+
 	float staminaUse = 1.f;
 	float staminaRegain = 0.1f;
 	float exhaustion = 0;
@@ -242,8 +248,35 @@ public:
 	{
 		if (inputSkill)
 		{
-			hitboxActive = true;
-			attackState = 2;
+			if (canGrab)
+			{
+				isGrabing = true;
+				grabFrame = 0;
+				canAttack = false;
+				canGrab = false;
+				canTurn = false;
+			}
+		}
+		else if (grabFrame > grabFrames)
+		{
+			canGrab = true;
+		}
+
+		if (isGrabing)
+		{
+			if (grabFrame == firstActiveGrabFrame)
+			{
+				hitboxActive = true;
+				attackState = 2;
+			}
+			if (grabFrame > grabFrames)
+			{
+				canTurn = true;
+				canAttack = true;
+				isGrabing = false;
+				grabFrame = 0;
+			}
+			grabFrame++;
 		}
 	}
 
@@ -271,6 +304,7 @@ public:
 						canWalk = false;
 						isAttacking = true;
 						isCharging = false;
+						canGrab = false;
 						AddForce(2 * inputHorizontal);
 						charge = 0;
 						attackFrame = firstActiveAttackFrame;
@@ -279,6 +313,7 @@ public:
 					{
 						canBlock = false;
 						isCharging = true;
+						canGrab = false;
 						canAttack = false;
 						canTurn = false;
 						sprite.setFillColor(sf::Color::Red);
@@ -329,6 +364,7 @@ public:
 				canDodge = true;
 				canBlock = true;
 				canTurn = true;
+				canGrab = true;
 				exhaustion += staminaUse;
 			}
 
