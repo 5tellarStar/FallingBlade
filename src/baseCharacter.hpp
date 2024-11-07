@@ -67,8 +67,8 @@ public:
 	int AttackCancelableFrames = 4;
 	int attackFrame = 0;
 	float charge = 0;
-	float chargeSpeed = 1;
-	float maxCharge = 7;
+	float chargeSpeed = 0.5f;
+	float maxCharge = 10;
 
 	bool isGrabing = false;
 	bool canGrab = true;

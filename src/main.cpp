@@ -62,6 +62,10 @@ int main()
 
     std::ofstream trainingData1("trainingData1.txt");
     std::ofstream trainingData2("trainingData2.txt");
+    std::string dataLine1;
+    std::string oldDataLine1;
+    std::string dataLine2;
+    std::string oldDataLine2;
 
     while (window.isOpen())
     {
@@ -421,29 +425,34 @@ int main()
 
                 if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f) && ImpactFrame == 0)
                 {
-                    /*
-                    player2.Input(bestAi.CalcOutputs(std::vector<double>
-                    {
-                        player2.distToEdge1,
-                            player2.distToEdge2,
-                            player1.distToEdge1,
-                            player1.distToEdge2,
-                            player2.position - player1.position,
-                            player2.dodges,
-                            player1.dodges,
-                            (double)player2.blocking,
-                            (double)player1.blocking,
-                            (double)player1.firstActiveAttackFrame - player1.attackFrame,
-                            (double)player1.firstActiveAttackFrame - player1.attackFrame,
-                            player2.velocity,
-                            player1.velocity
-                    }));
-                    */
 
                     if (!first)
                     {
-                        trainingData2 << 
-                            (player2.inputVertical+2)+"\n";
+                        if (!player1.dead && !player2.dead)
+                        {
+                            dataLine2 +=
+                                std::to_string(player2.inputVertical) + "|" +
+                                std::to_string(player2.inputHorizontal) + "|" +
+                                std::to_string(player2.inputAttack) + "|" +
+                                std::to_string(player2.inputDodge) + "|" +
+                                std::to_string(player2.inputSkill);
+                            dataLine1 +=
+                                std::to_string(player1.inputVertical) + "|" +
+                                std::to_string(player1.inputHorizontal) + "|" +
+                                std::to_string(player1.inputAttack) + "|" +
+                                std::to_string(player1.inputDodge) + "|" +
+                                std::to_string(player1.inputSkill);
+                            if (dataLine2 != oldDataLine2)
+                            {
+                                trainingData2 << dataLine2 << "\n";
+                                oldDataLine2 = dataLine2;
+                            }
+                            if (dataLine1 != oldDataLine1)
+                            {
+                                trainingData1 << dataLine1 << "\n";
+                                oldDataLine1 = dataLine1;
+                            }
+                        }
                     }
                     first = false;
                     if (player1.Tick())
@@ -591,25 +600,47 @@ int main()
                         ImpactFrame = 5;
                     }
 
-
-                    trainingData2 << 
-                        std::to_string(player2.distToEdge1) + 
-                        std::to_string(player2.distToEdge2) +
-                        std::to_string(player1.distToEdge1) +
-                        std::to_string(player1.distToEdge2) +
-                        std::to_string(player2.position - player1.position) +
-                        std::to_string(player2.dodges) +
-                        std::to_string(player1.dodges) +
-                        std::to_string((double)player2.blocking) +
-                        std::to_string((double)player1.blocking) +
-                        std::to_string((double)player2.firstActiveAttackFrame - player2.attackFrame) +
-                        std::to_string((double)player1.firstActiveAttackFrame - player1.attackFrame) +
-                        std::to_string((double)player2.firstActiveGrabFrame - player2.grabFrame) +
-                        std::to_string((double)player1.firstActiveGrabFrame - player1.grabFrame) +
-                        std::to_string(player2.velocity) +
-                        std::to_string(player1.velocity)
-                        ;
-
+                    if (!player1.dead && !player2.dead)
+                    {
+                        dataLine2 =
+                            std::to_string(player2.distToEdge2) + "|" +
+                            std::to_string(player2.distToEdge1) + "|" +
+                            std::to_string(player1.distToEdge2) + "|" +
+                            std::to_string(player1.distToEdge1) + "|" +
+                            std::to_string(player1.position - player2.position) + "|" +
+                            std::to_string(player2.dodges) + "|" +
+                            std::to_string(player1.dodges) + "|" +
+                            std::to_string((double)player2.blocking) + "|" +
+                            std::to_string((double)player1.blocking) + "|" +
+                            std::to_string((double)player2.firstActiveAttackFrame - player2.attackFrame) + "|" +
+                            std::to_string((double)player1.firstActiveAttackFrame - player1.attackFrame) + "|" +
+                            std::to_string((double)player2.firstActiveGrabFrame - player2.grabFrame) + "|" +
+                            std::to_string((double)player1.firstActiveGrabFrame - player1.grabFrame) + "|" +
+                            std::to_string(player2.charge) + "|" +
+                            std::to_string(player1.charge) + "|" +
+                            std::to_string(player2.velocity) + "|" +
+                            std::to_string(player1.velocity) + "|"
+                            ;
+                        dataLine1 =
+                            std::to_string(player1.distToEdge1) + "|" +
+                            std::to_string(player1.distToEdge2) + "|" +
+                            std::to_string(player2.distToEdge1) + "|" +
+                            std::to_string(player2.distToEdge2) + "|" +
+                            std::to_string(player1.position - player2.position) + "|" +
+                            std::to_string(player1.dodges) + "|" +
+                            std::to_string(player2.dodges) + "|" +
+                            std::to_string((double)player1.blocking) + "|" +
+                            std::to_string((double)player2.blocking) + "|" +
+                            std::to_string((double)player1.firstActiveAttackFrame - player1.attackFrame) + "|" +
+                            std::to_string((double)player2.firstActiveAttackFrame - player2.attackFrame) + "|" +
+                            std::to_string((double)player1.firstActiveGrabFrame - player1.grabFrame) + "|" +
+                            std::to_string((double)player2.firstActiveGrabFrame - player2.grabFrame) + "|" +
+                            std::to_string(player1.charge) + "|" +
+                            std::to_string(player2.charge) + "|" +
+                            std::to_string(player1.velocity) + "|" +
+                            std::to_string(player2.velocity) + "|"
+                            ;
+                    }
                     globalTime.restart();
                 }
                 else
