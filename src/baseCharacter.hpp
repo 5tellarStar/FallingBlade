@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+#include <vector>
 
 #pragma once
 
@@ -92,6 +93,12 @@ public:
 	float distToEdge1;
 	float distToEdge2;
 
+	sf::Texture legsTexture;
+	sf::Sprite legsSprite;
+
+	std::vector<int> legsAnimation[3] = {
+		{1,1,1,1},{1,1,1,1},{1,1,1,1}
+	};
 
 	BaseCharacter(bool isPlayer2)
 	{
