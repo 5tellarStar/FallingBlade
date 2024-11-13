@@ -94,20 +94,26 @@ public:
 	float distToEdge2;
 
 	sf::Texture legsTexture;
-	sf::Sprite legsSprite;
+	sf::Sprite legsSprite = sf::Sprite(legsTexture,sf::IntRect(0,0,30,36));
 
-	std::vector<int> legsAnimation[3] = {
-		{1,1,1,1},{1,1,1,1},{1,1,1,1}
-	};
+	std::vector<int> legsAnimation[6];
+	int currentLegsAnimation;
+	int currentLegsFrame = 0;
 
 	BaseCharacter(bool isPlayer2)
 	{
-
+		legsTexture.loadFromFile("Legs.png");
 		sprite.setSize(sf::Vector2f(32, 64));
-
+		legsAnimation[0] = std::vector<int>{ 0 };
+		legsAnimation[1] = std::vector<int>{ 0, 1, 2, 3 };
+		legsAnimation[2] = std::vector<int>{ 0, 3, 2, 1 };
+		legsAnimation[3] = std::vector<int>{ 4 };
+		legsAnimation[4] = std::vector<int>{ 4, 5, 6, 7 };
+		legsAnimation[5] = std::vector<int>{ 4, 7, 6, 5 };
 
 		if (!isPlayer2)
 		{
+			currentLegsAnimation = 0;
 			up = sf::Keyboard::W;
 			right = sf::Keyboard::D;
 			down = sf::Keyboard::S;
@@ -122,6 +128,7 @@ public:
 		}
 		else
 		{
+			currentLegsAnimation = 3;
 			up = sf::Keyboard::Up;
 			right = sf::Keyboard::Right;
 			down = sf::Keyboard::Down;
@@ -240,8 +247,8 @@ public:
 
 	void SetPosition(float pos)
 	{
-		
 		position = pos;
+		legsSprite.setPosition(sf::Vector2f(pos - 17, top + 28));
 		sprite.setPosition(sf::Vector2f(pos - width, top));
 	}
 
@@ -437,6 +444,9 @@ public:
 				}
 			}
 		
+
+		
+
 		SetPosition(position + velocity);
 
 		
