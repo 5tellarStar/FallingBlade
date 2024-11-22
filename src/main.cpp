@@ -85,6 +85,70 @@ int main()
                     view.setSize(sf::Vector2f(512, 512 * event.size.height / event.size.width));
                     window.setView(view);
                 }
+                if (event.type == sf::Event::KeyPressed)
+                {
+                    if (event.key.code == player1.up)
+                        player1.upIsPressed = true;
+                    if (event.key.code == player1.down)
+                        player1.downIsPressed = true;
+                    if (event.key.code == player1.right)
+                        player1.rightIsPressed = true;
+                    if (event.key.code == player1.left)
+                        player1.leftIsPressed = true;
+                    if (event.key.code == player1.attack)
+                        player1.attackIsPressed = true;
+                    if (event.key.code == player1.dodge)
+                        player1.dodgeIsPressed = true;
+                    if (event.key.code == player1.skill)
+                        player1.skillIsPressed = true;
+
+                    if (event.key.code == player2.up)
+                        player2.upIsPressed = true;
+                    if (event.key.code == player2.down)
+                        player2.downIsPressed = true;
+                    if (event.key.code == player2.right)
+                        player2.rightIsPressed = true;
+                    if (event.key.code == player2.left)
+                        player2.leftIsPressed = true;
+                    if (event.key.code == player2.attack)
+                        player2.attackIsPressed = true;
+                    if (event.key.code == player2.dodge)
+                        player2.dodgeIsPressed = true;
+                    if (event.key.code == player2.skill)
+                        player2.skillIsPressed = true;
+                }
+                if (event.type == sf::Event::KeyReleased)
+                {
+                    if (event.key.code == player1.up)
+                        player1.upIsPressed = false;
+                    if (event.key.code == player1.down)
+                        player1.downIsPressed = false;
+                    if (event.key.code == player1.right)
+                        player1.rightIsPressed = false;
+                    if (event.key.code == player1.left)
+                        player1.leftIsPressed = false;
+                    if (event.key.code == player1.attack)
+                        player1.attackIsPressed = false;
+                    if (event.key.code == player1.dodge)
+                        player1.dodgeIsPressed = false;
+                    if (event.key.code == player1.skill)
+                        player1.skillIsPressed = false;
+
+                    if (event.key.code == player2.up)
+                        player2.upIsPressed = false;
+                    if (event.key.code == player2.down)
+                        player2.downIsPressed = false;
+                    if (event.key.code == player2.right)
+                        player2.rightIsPressed = false;
+                    if (event.key.code == player2.left)
+                        player2.leftIsPressed = false;
+                    if (event.key.code == player2.attack)
+                        player2.attackIsPressed = false;
+                    if (event.key.code == player2.dodge)
+                        player2.dodgeIsPressed = false;
+                    if (event.key.code == player2.skill)
+                        player2.skillIsPressed = false;
+                }
             }
             if (training)
             {
@@ -654,6 +718,7 @@ int main()
                 window.draw(player1.sprite);
                 window.draw(player1.legsSprite);
                 window.draw(player2.sprite);
+                window.draw(player2.legsSprite);
             }
             window.draw(debug);
             window.display();

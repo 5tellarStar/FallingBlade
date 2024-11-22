@@ -9,12 +9,19 @@ class BaseCharacter
 {
 public:
 	sf::Keyboard::Key up;
+	bool upIsPressed = false;
 	sf::Keyboard::Key right;
+	bool rightIsPressed = false;
 	sf::Keyboard::Key down;
+	bool downIsPressed = false;
 	sf::Keyboard::Key left;
+	bool leftIsPressed = false;
 	sf::Keyboard::Key attack;
+	bool attackIsPressed = false;
 	sf::Keyboard::Key dodge;
+	bool dodgeIsPressed = false;
 	sf::Keyboard::Key skill;
+	bool skillIsPressed = false;
 
 	bool evenFrame = false;
 
@@ -123,7 +130,7 @@ public:
 		legsAnimationStepLength[5] = std::vector<int>{ 3,4,2,1 };
 		if (!isPlayer2)
 		{
-			currentLegsAnimation = 1;
+			currentLegsAnimation = 0;
 			up = sf::Keyboard::W;
 			right = sf::Keyboard::D;
 			down = sf::Keyboard::S;
@@ -224,11 +231,11 @@ public:
 	}
 	void Input()
 	{
-		if (sf::Keyboard::isKeyPressed(up) && !sf::Keyboard::isKeyPressed(down))
+		if (upIsPressed && !downIsPressed)
 		{
 			inputVertical = 1;
 		}
-		else if (sf::Keyboard::isKeyPressed(down) && !sf::Keyboard::isKeyPressed(up))
+		else if (downIsPressed && !upIsPressed)
 		{
 			inputVertical = -1;
 		}
@@ -237,11 +244,11 @@ public:
 			inputVertical = 0;
 		}
 
-		if (sf::Keyboard::isKeyPressed(right) && !sf::Keyboard::isKeyPressed(left))
+		if (rightIsPressed && !leftIsPressed)
 		{
 			inputHorizontal = 1;
 		}
-		else if (sf::Keyboard::isKeyPressed(left) && !sf::Keyboard::isKeyPressed(right))
+		else if (leftIsPressed && !rightIsPressed)
 		{
 			inputHorizontal = -1;
 		}
@@ -250,9 +257,9 @@ public:
 			inputHorizontal = 0;
 		}
 
-		inputAttack = sf::Keyboard::isKeyPressed(attack);
-		inputDodge = sf::Keyboard::isKeyPressed(dodge);
-		inputSkill = sf::Keyboard::isKeyPressed(skill);
+		inputAttack = attackIsPressed;
+		inputDodge = dodgeIsPressed;
+		inputSkill = skillIsPressed;
 	}
 
 	void SetPosition(float pos)
@@ -469,7 +476,9 @@ public:
 						if (currentLegsAnimation != 2)
 						{
 							currentLegsAnimation = 2;
+							break;
 						}
+						position += legsAnimationStepLength[currentLegsAnimation][0];
 						break;
 					}
 					if (currentLegsAnimation != 4)
@@ -477,15 +486,43 @@ public:
 						currentLegsAnimation = 4;
 						break;
 					}
+					position += legsAnimationStepLength[currentLegsAnimation][0];
 					break;
+
 				case 0:
+					if (direction == 1)
+					{
+						currentLegsAnimation = 0;
+						break;
+					}
+					currentLegsAnimation = 3;
 					break;
+
 				case 1:
+					if (direction == 1)
+					{
+						if (currentLegsAnimation != 1)
+						{
+							currentLegsAnimation = 1;
+							break;
+						}
+						position += legsAnimationStepLength[currentLegsAnimation][0];
+						break;
+					}
+					if (currentLegsAnimation != 5)
+					{
+						currentLegsAnimation = 5;
+						break;
+					}
+					position += legsAnimationStepLength[currentLegsAnimation][0];
 					break;
 				}
 				currentLegsFrame = 0;
 			}
-			position += legsAnimationStepLength[currentLegsAnimation][currentLegsFrame];
+			if (currentLegsFrame != 0)
+			{
+				position += legsAnimationStepLength[currentLegsAnimation][currentLegsFrame];
+			}
 		}
 		else
 		{
