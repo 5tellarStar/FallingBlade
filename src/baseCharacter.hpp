@@ -16,6 +16,8 @@ public:
 	sf::Keyboard::Key dodge;
 	sf::Keyboard::Key skill;
 
+	bool evenFrame = false;
+
 	int direction;
 	bool canTurn = true;
 
@@ -52,7 +54,7 @@ public:
 	int blocking = 0;
 	bool blocked = false;
 
-	
+
 	bool canDodge = true;
 	bool isDodging = false;
 	float dodgeForce = 7;
@@ -94,9 +96,11 @@ public:
 	float distToEdge2;
 
 	sf::Texture legsTexture;
-	sf::Sprite legsSprite = sf::Sprite(legsTexture,sf::IntRect(0,0,30,36));
+	sf::IntRect legsRectSource = sf::IntRect(0, 0, 34, 36);
+	sf::Sprite legsSprite = sf::Sprite(legsTexture, legsRectSource);
 
 	std::vector<int> legsAnimation[6];
+	std::vector<int> legsAnimationStepLength[6];
 	int currentLegsAnimation;
 	int currentLegsFrame = 0;
 
@@ -111,9 +115,15 @@ public:
 		legsAnimation[4] = std::vector<int>{ 4, 5, 6, 7 };
 		legsAnimation[5] = std::vector<int>{ 4, 7, 6, 5 };
 
+		legsAnimationStepLength[0] = std::vector<int>{ 0 };
+		legsAnimationStepLength[1] = std::vector<int>{ 4,3,1,2 };
+		legsAnimationStepLength[2] = std::vector<int>{ -3,-4,-2,-1 };
+		legsAnimationStepLength[3] = std::vector<int>{ 0 };
+		legsAnimationStepLength[4] = std::vector<int>{ -4,-3,-1,-2 };
+		legsAnimationStepLength[5] = std::vector<int>{ 3,4,2,1 };
 		if (!isPlayer2)
 		{
-			currentLegsAnimation = 0;
+			currentLegsAnimation = 1;
 			up = sf::Keyboard::W;
 			right = sf::Keyboard::D;
 			down = sf::Keyboard::S;
@@ -162,7 +172,7 @@ public:
 			direction = -1;
 		}
 	}
-	void Input(std::vector<double> inputs) 
+	void Input(std::vector<double> inputs)
 	{
 		if (inputs[0] > 0.9 && inputs[1] < 0.9)
 		{
@@ -218,7 +228,7 @@ public:
 		{
 			inputVertical = 1;
 		}
-		else if(sf::Keyboard::isKeyPressed(down) && !sf::Keyboard::isKeyPressed(up))
+		else if (sf::Keyboard::isKeyPressed(down) && !sf::Keyboard::isKeyPressed(up))
 		{
 			inputVertical = -1;
 		}
@@ -305,151 +315,190 @@ public:
 
 	bool Tick()
 	{
-			Skill();
-			blocking = inputVertical;
+		Skill();
+		blocking = inputVertical;
 
-			if (inputAttack)
+		if (inputAttack)
+		{
+			if (!isCharging && canAttack)
 			{
-				if (!isCharging && canAttack)
+				if (blocked)
 				{
-					if (blocked)
+					attackState = inputVertical;
+					canWalk = false;
+					isAttacking = true;
+					isCharging = false;
+					canGrab = false;
+					AddForce(2 * inputHorizontal);
+					charge = 0;
+					attackFrame = firstActiveAttackFrame;
+				}
+				else
+				{
+					canBlock = false;
+					isCharging = true;
+					canGrab = false;
+					canAttack = false;
+					canTurn = false;
+					sprite.setFillColor(sf::Color::Red);
+				}
+			}
+			if (isCharging && charge < maxCharge)
+			{
+				charge += chargeSpeed;
+			}
+		}
+		else if (isCharging)
+		{
+			attackState = inputVertical;
+			canWalk = false;
+			isAttacking = true;
+			isCharging = false;
+			AddForce(charge * inputHorizontal);
+			charge = 0;
+			attackFrame = 0;
+		}
+
+		if (isAttacking && attackFrame < AttackFrames)
+		{
+			if (attackFrame == AttackCancelableFrames)
+			{
+				canDodge = false;
+			}
+			if (attackFrame == firstActiveAttackFrame)
+			{
+				sprite.setFillColor(sf::Color::Yellow);
+				hitboxActive = true;
+			}
+			attackFrame++;
+		}
+		else if (isAttacking && attackFrame < exhaustion + AttackFrames)
+		{
+			attackFrame++;
+			sprite.setFillColor(sf::Color::Blue);
+		}
+		else if (isAttacking)
+		{
+			sprite.setFillColor(sf::Color::Blue);
+			attackFrame = 0;
+			hitboxActive = 0;
+			isAttacking = false;
+			canAttack = true;
+			canWalk = true;
+			canDodge = true;
+			canBlock = true;
+			canTurn = true;
+			canGrab = true;
+			exhaustion += staminaUse;
+		}
+
+		if (dodges < MaxDodges)
+		{
+			dodges += dodgeCharge;
+		}
+		if (inputDodge)
+		{
+			if (canDodge && dodges >= 1)
+			{
+				dodges -= 1;
+				canDodge = false;
+				if ((inputHorizontal < 0 && velocity > 0) || (inputHorizontal > 0 && velocity < 0))
+				{
+					velocity = 0;
+				}
+				AddForce(dodgeForce * inputHorizontal);
+			}
+		}
+		else
+		{
+			canDodge = true;
+		}
+
+
+		/*
+		if (canWalk)
+		{
+			if (inputHorizontal == 1)
+			{
+				if (!isCharging)
+				{
+					if (velocity < walkSpeedMax)
 					{
-						attackState = inputVertical;
-						canWalk = false;
-						isAttacking = true;
-						isCharging = false;
-						canGrab = false;
-						AddForce(2 * inputHorizontal);
-						charge = 0;
-						attackFrame = firstActiveAttackFrame;
+						velocity += walkSpeed;
 					}
-					else
+				}
+				else
+				{
+					if (velocity < walkSpeedMax / 2)
 					{
-						canBlock = false;
-						isCharging = true;
-						canGrab = false;
-						canAttack = false;
-						canTurn = false;
-						sprite.setFillColor(sf::Color::Red);
+						velocity += walkSpeed / 2;
 					}
 				}
-				if (isCharging && charge < maxCharge)
+			}
+			if (inputHorizontal == -1)
+			{
+				if (!isCharging)
 				{
-					charge += chargeSpeed;
-				}
-			}
-			else if (isCharging)
-			{
-				attackState = inputVertical;
-				canWalk = false;
-				isAttacking = true;
-				isCharging = false;
-				AddForce(charge * inputHorizontal);
-				charge = 0;
-				attackFrame = 0;
-			}
-
-			if (isAttacking && attackFrame < AttackFrames)
-			{
-				if (attackFrame == AttackCancelableFrames)
-				{
-					canDodge = false;
-				}
-				if (attackFrame == firstActiveAttackFrame)
-				{
-					sprite.setFillColor(sf::Color::Yellow);
-					hitboxActive = true;
-				}
-				attackFrame++;
-			}
-			else if (isAttacking && attackFrame < exhaustion + AttackFrames)
-			{
-				attackFrame++;
-				sprite.setFillColor(sf::Color::Blue);
-			}
-			else if (isAttacking)
-			{
-				sprite.setFillColor(sf::Color::Blue);
-				attackFrame = 0;
-				hitboxActive = 0;
-				isAttacking = false;
-				canAttack = true;
-				canWalk = true;
-				canDodge = true;
-				canBlock = true;
-				canTurn = true;
-				canGrab = true;
-				exhaustion += staminaUse;
-			}
-
-			if (dodges < MaxDodges)
-			{
-				dodges += dodgeCharge;
-			}
-			if (inputDodge)
-			{
-				if (canDodge && dodges >= 1)
-				{
-					dodges -= 1;
-					canDodge = false;
-					if ((inputHorizontal < 0 && velocity > 0) || (inputHorizontal > 0 && velocity < 0))
+					if (velocity > -walkSpeedMax)
 					{
-						velocity = 0;
+						velocity -= walkSpeed;
 					}
-					AddForce(dodgeForce * inputHorizontal);
+				}
+				else
+				{
+					if (velocity > -walkSpeedMax / 2)
+					{
+						velocity -= walkSpeed / 2;
+					}
 				}
 			}
-			else
+		}
+		*/
+
+		if (evenFrame)
+		{
+			currentLegsFrame++;
+			evenFrame = false;
+			if (currentLegsFrame == legsAnimation[currentLegsAnimation].size())
 			{
-				canDodge = true;
-			}
-
-
-
-			if (canWalk)
-			{
-				if (inputHorizontal == 1)
+				switch (inputHorizontal)
 				{
-					if (!isCharging)
+				case -1:
+					if (direction == 1)
 					{
-						if (velocity < walkSpeedMax)
+						if (currentLegsAnimation != 2)
 						{
-							velocity += walkSpeed;
+							currentLegsAnimation = 2;
 						}
+						break;
 					}
-					else
+					if (currentLegsAnimation != 4)
 					{
-						if (velocity < walkSpeedMax / 2)
-						{
-							velocity += walkSpeed / 2;
-						}
+						currentLegsAnimation = 4;
+						break;
 					}
+					break;
+				case 0:
+					break;
+				case 1:
+					break;
 				}
-				if (inputHorizontal == -1)
-				{
-					if (!isCharging)
-					{
-						if (velocity > -walkSpeedMax)
-						{
-							velocity -= walkSpeed;
-						}
-					}
-					else
-					{
-						if (velocity > -walkSpeedMax / 2)
-						{
-							velocity -= walkSpeed / 2;
-						}
-					}
-				}
+				currentLegsFrame = 0;
 			}
-		
+			position += legsAnimationStepLength[currentLegsAnimation][currentLegsFrame];
+		}
+		else
+		{
+			evenFrame = true;
+		}
 
-		
+
+		legsRectSource.left = legsAnimation[currentLegsAnimation][currentLegsFrame]*34;
+
+		legsSprite.setTextureRect(legsRectSource);
 
 		SetPosition(position + velocity);
 
-		
 
 		if (exhaustion > 0)
 		{
@@ -472,11 +521,12 @@ public:
 				velocity = 0;
 			}
 		}
-		distToEdge1 =  440 - (position - width);
+		distToEdge1 = 440 - (position - width);
 		distToEdge2 = (position + width) - 72;
 
-		
+
 		blocked = false;
+
 		if (distToEdge1 <= 0 || distToEdge2 <= 0)
 		{
 			sprite.setFillColor(sf::Color::Magenta);

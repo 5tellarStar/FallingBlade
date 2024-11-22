@@ -423,9 +423,9 @@ int main()
                     player2.Reset();
                 }
 
-                if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f) && ImpactFrame == 0)
+                if (globalTime.getElapsedTime().asSeconds() > (1.0 / 12.0) && ImpactFrame == 0)
                 {
-
+                    
                     if (!first)
                     {
                         if (!player1.dead && !player2.dead)
@@ -645,7 +645,7 @@ int main()
                 }
                 else
                 {
-                    if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f))
+                    if (globalTime.getElapsedTime().asSeconds() > (1.f / 12.f))
                     {
                         ImpactFrame--;
                         globalTime.restart();
