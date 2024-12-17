@@ -717,8 +717,12 @@ int main()
                 }
                 window.draw(player1.sprite);
                 window.draw(player1.legsSprite);
+                window.draw(player1.upperBodySprite);
+                window.draw(player1.upperBodyColorSprite);
                 window.draw(player2.sprite);
                 window.draw(player2.legsSprite);
+                window.draw(player1.upperBodySprite);
+                window.draw(player1.upperBodyColorSprite);
             }
             window.draw(debug);
             window.display();

@@ -108,12 +108,22 @@ public:
 
 	std::vector<int> legsAnimation[6];
 	std::vector<int> legsAnimationStepLength[6];
+	std::vector<int> legsAnimationBodyOffset[6];
 	int currentLegsAnimation;
 	int currentLegsFrame = 0;
+
+	sf::Texture upperBodyTexture;
+	sf::IntRect upperBodyRectSource = sf::IntRect(0, 0, 127, 96);
+	sf::Sprite upperBodySprite = sf::Sprite(upperBodyTexture, upperBodyRectSource);
+
+	sf::Texture upperBodyColorTexture;
+	sf::Sprite upperBodyColorSprite = sf::Sprite(upperBodyColorTexture, upperBodyRectSource);
 
 	BaseCharacter(bool isPlayer2)
 	{
 		legsTexture.loadFromFile("Legs.png");
+		upperBodyTexture.loadFromFile("UpperBody.png");
+		upperBodyColorTexture.loadFromFile("UpperBodyColor.png");
 		sprite.setSize(sf::Vector2f(32, 64));
 		legsAnimation[0] = std::vector<int>{ 0 };
 		legsAnimation[1] = std::vector<int>{ 0, 1, 2, 3 };
@@ -128,6 +138,14 @@ public:
 		legsAnimationStepLength[3] = std::vector<int>{ 0 };
 		legsAnimationStepLength[4] = std::vector<int>{ -4,-3,-1,-2 };
 		legsAnimationStepLength[5] = std::vector<int>{ 3,4,2,1 };
+
+		legsAnimationBodyOffset[0] = std::vector<int>{ 0 };
+		legsAnimationBodyOffset[1] = std::vector<int>{ 0, -1, -2, -1 };
+		legsAnimationBodyOffset[2] = std::vector<int>{ 0, -1, -2, -1 };
+		legsAnimationBodyOffset[3] = std::vector<int>{ 0 };
+		legsAnimationBodyOffset[4] = std::vector<int>{ 0, -1, -2, -1 };
+		legsAnimationBodyOffset[5] = std::vector<int>{ 0, -1, -2, -1 };
+
 		if (!isPlayer2)
 		{
 			currentLegsAnimation = 0;
@@ -266,6 +284,8 @@ public:
 	{
 		position = pos;
 		legsSprite.setPosition(sf::Vector2f(pos - 17, top + 28));
+		upperBodySprite.setPosition(sf::Vector2f(pos - 63, top - 30 - legsAnimationBodyOffset[currentLegsAnimation][currentLegsFrame]));
+		upperBodyColorSprite.setPosition(sf::Vector2f(pos - 63, top - 30 - legsAnimationBodyOffset[currentLegsAnimation][currentLegsFrame]));
 		sprite.setPosition(sf::Vector2f(pos - width, top));
 	}
 
