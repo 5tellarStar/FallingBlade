@@ -77,7 +77,7 @@ public:
 	int AttackCancelableFrames = 4;
 	int attackFrame = 0;
 	float charge = 0;
-	float chargeSpeed = 0.5f;
+	float chargeSpeed = 1;
 	float maxCharge = 10;
 
 	bool isGrabing = false;
@@ -90,13 +90,14 @@ public:
 	float staminaRegain = 0.1f;
 	float exhaustion = 0;
 
-	int firstActiveAttackFrame = 5;
+	int firstActiveAttackFrame = 3;
+	int lastActiveAttackFrame = 5;
 
 	float attackVelocity = 7;
 	bool hitboxActive = false;
 	int attackState = 0;
 	float highAttackRange = 32;
-	float attackRange = 32;
+	float attackRange = 64;
 	float lowAttackRange = 32;
 
 	float distToEdge1;
@@ -140,19 +141,25 @@ public:
 	sf::Texture upperBodyColorTexture;
 	sf::Sprite upperBodyColorSprite = sf::Sprite(upperBodyColorTexture, upperBodyRectSource);
 
-	std::vector<int> upperBodyAnimation[12] = {
+	std::vector<int> upperBodyAnimation[18] = {
 		std::vector<int>{0},
 		std::vector<int>{1},
 		std::vector<int>{2},
-		std::vector<int>{3,4,5},
-		std::vector<int>{6,7,8},
-		std::vector<int>{9,10,11},
+		std::vector<int>{3},
+		std::vector<int>{6},
+		std::vector<int>{9},
+		std::vector<int>{3,3,4,5,5,5},
+		std::vector<int>{6,6,7,8,8,8},
+		std::vector<int>{9,9,10,11,11},
 		std::vector<int>{12},
 		std::vector<int>{13},
 		std::vector<int>{14},
-		std::vector<int>{15,16,17},
-		std::vector<int>{18,19,20},
-		std::vector<int>{21,22,23}
+		std::vector<int>{15},
+		std::vector<int>{18},
+		std::vector<int>{21},
+		std::vector<int>{15,15,16,17,17,17},
+		std::vector<int>{18,18,19,20,20,20},
+		std::vector<int>{21,21,22,23,23,23}
 	};
 	int currentUpperBodyAnimation;
 	int currentUpperBodyFrame = 0;
@@ -184,7 +191,7 @@ public:
 		else
 		{
 			currentLegsAnimation = 3;
-			currentUpperBodyAnimation = 6;
+			currentUpperBodyAnimation = 9;
 			up = sf::Keyboard::Up;
 			right = sf::Keyboard::Right;
 			down = sf::Keyboard::Down;
@@ -368,7 +375,7 @@ public:
 		blocking = inputVertical;
 
 		
-
+		/*
 		if (inputAttack)
 		{
 			if (!isCharging && canAttack)
@@ -442,6 +449,7 @@ public:
 			canGrab = true;
 			exhaustion += staminaUse;
 		}
+		*/
 
 		if (dodges < MaxDodges)
 		{
@@ -569,11 +577,21 @@ public:
 			}
 
 			currentUpperBodyFrame++;
+
+			if (currentUpperBodyFrame == firstActiveAttackFrame)
+			{
+				hitboxActive = true;
+			}
+			if (currentUpperBodyFrame == lastActiveAttackFrame)
+			{
+				hitboxActive = false;
+			}
+
 			if (currentUpperBodyFrame == upperBodyAnimation[currentUpperBodyAnimation].size())
 			{
 				if (canBlock)
 				{
-					if (direction = 1)
+					if (direction == 1)
 					{
 						if (blocking + 1 < currentUpperBodyAnimation)
 						{
@@ -586,18 +604,82 @@ public:
 					}
 					else
 					{
-						if (blocking + 1 < currentUpperBodyAnimation-12)
+						if (blocking + 1 < currentUpperBodyAnimation-9)
 						{
 							currentUpperBodyAnimation--;
 						}
-						if (blocking + 1 > currentUpperBodyAnimation-12)
+						if (blocking + 1 > currentUpperBodyAnimation-9)
 						{
 							currentUpperBodyAnimation++;
 						}
 					}
 				}
+				if (inputAttack && !isCharging && canAttack)
+				{
+					canBlock = false;
+					isCharging = true;
+					canGrab = false;
+					canAttack = false;
+					canTurn = false;
+					currentUpperBodyAnimation = direction == 1 ? inputVertical + 1 + 3 : inputVertical + 1 + 12;
+				}
+				else if (isCharging)
+				{
+					if (inputAttack)
+					{
+						if (direction == 1)
+						{
+							if (inputVertical + 1 < currentUpperBodyAnimation - 3)
+							{
+								currentUpperBodyAnimation--;
+							}
+							if (inputVertical + 1 > currentUpperBodyAnimation - 3)
+							{
+								currentUpperBodyAnimation++;
+							}
+						}
+						else
+						{
+							if (inputVertical + 1 < currentUpperBodyAnimation - 12)
+							{
+								currentUpperBodyAnimation--;
+							}
+							if (inputVertical + 1 > currentUpperBodyAnimation - 12)
+							{
+								currentUpperBodyAnimation++;
+							}
+						}
+						charge += chargeSpeed;
+						
+					}
+					else 
+					{
+						currentUpperBodyAnimation = direction == 1 ? inputVertical + 7 : inputVertical + 16;
+						attackState = inputVertical;
+						canWalk = false;
+						isAttacking = true;
+						isCharging = false;
+						AddForce(charge * inputHorizontal);
+						charge = 0;
+						attackFrame = 0;
+					}
+				}
+				else if (isAttacking)
+				{
+					currentUpperBodyAnimation -= 6;
+					attackFrame = 0;
+					isAttacking = false;
+					canAttack = true;
+					canWalk = true;
+					canDodge = true;
+					canBlock = true;
+					canTurn = true;
+					canGrab = true;
+					exhaustion += staminaUse;
+				}
 				currentUpperBodyFrame = 0;
 			}
+
 		}
 		else
 		{
