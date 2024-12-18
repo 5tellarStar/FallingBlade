@@ -617,6 +617,20 @@ int main()
                         {
                             if (player1.attackState == player2.blocking)
                             {
+                                player1.upperBodyRectSource.left -= 127;
+                                player1.upperBodySprite.setTextureRect(player1.upperBodyRectSource);
+                                player1.upperBodyColorSprite.setTextureRect(player1.upperBodyRectSource);
+                                player1.currentUpperBodyFrame = 0;
+                                player1.currentUpperBodyAnimation -= 6;
+                                player1.attackFrame = 0;
+                                player1.isAttacking = false;
+                                player1.canAttack = true;
+                                player1.canWalk = true;
+                                player1.canDodge = true;
+                                player1.canBlock = true;
+                                player1.canTurn = true;
+                                player1.canGrab = true;
+                                player1.exhaustion += player1.staminaUse;
                                 player2.sprite.setFillColor(sf::Color::Green);
                                 player2.AddForce((player1.attackVelocity / 2) * player1.mass * player1.direction);
                                 player2.blocked = true;

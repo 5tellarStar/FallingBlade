@@ -91,7 +91,7 @@ public:
 	float exhaustion = 0;
 
 	int firstActiveAttackFrame = 3;
-	int lastActiveAttackFrame = 5;
+	int lastActiveAttackFrame = 4;
 
 	float attackVelocity = 7;
 	bool hitboxActive = false;
