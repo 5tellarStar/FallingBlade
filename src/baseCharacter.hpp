@@ -106,9 +106,30 @@ public:
 	sf::IntRect legsRectSource = sf::IntRect(0, 0, 34, 36);
 	sf::Sprite legsSprite = sf::Sprite(legsTexture, legsRectSource);
 
-	std::vector<int> legsAnimation[6];
-	std::vector<int> legsAnimationStepLength[6];
-	std::vector<int> legsAnimationBodyOffset[6];
+	std::vector<int> legsAnimation[6] = {
+		std::vector<int>{ 0 },
+		std::vector<int>{ 0, 1, 2, 3 },
+		std::vector<int>{ 0, 3, 2, 1 },
+		std::vector<int>{ 4 },
+		std::vector<int>{ 4, 5, 6, 7 },
+		std::vector<int>{ 4, 7, 6, 5 } 
+	};
+	std::vector<int> legsAnimationStepLength[6] = {
+		std::vector<int>{ 0 },
+		std::vector<int>{ 4,3,1,2 },
+		std::vector<int>{ -3,-4,-2,-1 },
+		std::vector<int>{ 0 },
+		std::vector<int>{ -4,-3,-1,-2 },
+		std::vector<int>{ 3,4,2,1 }
+	};
+	std::vector<int> legsAnimationBodyOffset[6] = {
+	std::vector<int>{ 0 },
+	std::vector<int>{ 0, -1, -2, -1 },
+	std::vector<int>{ 0, -1, -2, -1 },
+	std::vector<int>{ 0 },
+	std::vector<int>{ 0, -1, -2, -1 },
+	std::vector<int>{ 0, -1, -2, -1 }
+	};
 	int currentLegsAnimation;
 	int currentLegsFrame = 0;
 
@@ -119,36 +140,34 @@ public:
 	sf::Texture upperBodyColorTexture;
 	sf::Sprite upperBodyColorSprite = sf::Sprite(upperBodyColorTexture, upperBodyRectSource);
 
+	std::vector<int> upperBodyAnimation[12] = {
+		std::vector<int>{0},
+		std::vector<int>{1},
+		std::vector<int>{2},
+		std::vector<int>{3,4,5},
+		std::vector<int>{6,7,8},
+		std::vector<int>{9,10,11},
+		std::vector<int>{12},
+		std::vector<int>{13},
+		std::vector<int>{14},
+		std::vector<int>{15,16,17},
+		std::vector<int>{18,19,20},
+		std::vector<int>{21,22,23}
+	};
+	int currentUpperBodyAnimation;
+	int currentUpperBodyFrame = 0;
+
 	BaseCharacter(bool isPlayer2)
 	{
 		legsTexture.loadFromFile("Legs.png");
 		upperBodyTexture.loadFromFile("UpperBody.png");
 		upperBodyColorTexture.loadFromFile("UpperBodyColor.png");
-		sprite.setSize(sf::Vector2f(32, 64));
-		legsAnimation[0] = std::vector<int>{ 0 };
-		legsAnimation[1] = std::vector<int>{ 0, 1, 2, 3 };
-		legsAnimation[2] = std::vector<int>{ 0, 3, 2, 1 };
-		legsAnimation[3] = std::vector<int>{ 4 };
-		legsAnimation[4] = std::vector<int>{ 4, 5, 6, 7 };
-		legsAnimation[5] = std::vector<int>{ 4, 7, 6, 5 };
 
-		legsAnimationStepLength[0] = std::vector<int>{ 0 };
-		legsAnimationStepLength[1] = std::vector<int>{ 4,3,1,2 };
-		legsAnimationStepLength[2] = std::vector<int>{ -3,-4,-2,-1 };
-		legsAnimationStepLength[3] = std::vector<int>{ 0 };
-		legsAnimationStepLength[4] = std::vector<int>{ -4,-3,-1,-2 };
-		legsAnimationStepLength[5] = std::vector<int>{ 3,4,2,1 };
-
-		legsAnimationBodyOffset[0] = std::vector<int>{ 0 };
-		legsAnimationBodyOffset[1] = std::vector<int>{ 0, -1, -2, -1 };
-		legsAnimationBodyOffset[2] = std::vector<int>{ 0, -1, -2, -1 };
-		legsAnimationBodyOffset[3] = std::vector<int>{ 0 };
-		legsAnimationBodyOffset[4] = std::vector<int>{ 0, -1, -2, -1 };
-		legsAnimationBodyOffset[5] = std::vector<int>{ 0, -1, -2, -1 };
 
 		if (!isPlayer2)
 		{
 			currentLegsAnimation = 0;
+			currentUpperBodyAnimation = 0;
 			up = sf::Keyboard::W;
 			right = sf::Keyboard::D;
 			down = sf::Keyboard::S;
@@ -157,6 +176,7 @@ public:
 			dodge = sf::Keyboard::I;
 			skill = sf::Keyboard::O;
 			sprite.setFillColor(sf::Color::Blue);
+			upperBodyColorSprite.setColor(sf::Color::Blue);
 			SetPosition(96);
 			direction = 1;
 			player2 = false;
@@ -164,6 +184,7 @@ public:
 		else
 		{
 			currentLegsAnimation = 3;
+			currentUpperBodyAnimation = 6;
 			up = sf::Keyboard::Up;
 			right = sf::Keyboard::Right;
 			down = sf::Keyboard::Down;
@@ -172,6 +193,7 @@ public:
 			dodge = sf::Keyboard::Numpad8;
 			skill = sf::Keyboard::Numpad9;
 			sprite.setFillColor(sf::Color::Red);
+			upperBodyColorSprite.setColor(sf::Color::Red);
 			SetPosition(416);
 			direction = -1;
 			player2 = true;
@@ -344,6 +366,8 @@ public:
 	{
 		Skill();
 		blocking = inputVertical;
+
+		
 
 		if (inputAttack)
 		{
@@ -543,6 +567,37 @@ public:
 			{
 				position += legsAnimationStepLength[currentLegsAnimation][currentLegsFrame];
 			}
+
+			currentUpperBodyFrame++;
+			if (currentUpperBodyFrame == upperBodyAnimation[currentUpperBodyAnimation].size())
+			{
+				if (canBlock)
+				{
+					if (direction = 1)
+					{
+						if (blocking + 1 < currentUpperBodyAnimation)
+						{
+							currentUpperBodyAnimation--;
+						}
+						if (blocking + 1 > currentUpperBodyAnimation)
+						{
+							currentUpperBodyAnimation++;
+						}
+					}
+					else
+					{
+						if (blocking + 1 < currentUpperBodyAnimation-12)
+						{
+							currentUpperBodyAnimation--;
+						}
+						if (blocking + 1 > currentUpperBodyAnimation-12)
+						{
+							currentUpperBodyAnimation++;
+						}
+					}
+				}
+				currentUpperBodyFrame = 0;
+			}
 		}
 		else
 		{
@@ -551,8 +606,11 @@ public:
 
 
 		legsRectSource.left = legsAnimation[currentLegsAnimation][currentLegsFrame]*34;
-
 		legsSprite.setTextureRect(legsRectSource);
+
+		upperBodyRectSource.left = upperBodyAnimation[currentUpperBodyAnimation][currentUpperBodyFrame] * 127;
+		upperBodySprite.setTextureRect(upperBodyRectSource);
+		upperBodyColorSprite.setTextureRect(upperBodyRectSource);
 
 		SetPosition(position + velocity);
 
