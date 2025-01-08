@@ -141,7 +141,7 @@ public:
 	sf::Texture upperBodyColorTexture;
 	sf::Sprite upperBodyColorSprite = sf::Sprite(upperBodyColorTexture, upperBodyRectSource);
 
-	std::vector<int> upperBodyAnimation[18] = {
+	std::vector<int> upperBodyAnimation[24] = {
 		std::vector<int>{0},
 		std::vector<int>{1},
 		std::vector<int>{2},
@@ -151,6 +151,9 @@ public:
 		std::vector<int>{3,3,4,5,5,5},
 		std::vector<int>{6,6,7,8,8,8},
 		std::vector<int>{9,9,10,11,11},
+		std::vector<int>{4,4,4},
+		std::vector<int>{7,7,7},
+		std::vector<int>{10,10,10},
 		std::vector<int>{12},
 		std::vector<int>{13},
 		std::vector<int>{14},
@@ -159,7 +162,10 @@ public:
 		std::vector<int>{21},
 		std::vector<int>{15,15,16,17,17,17},
 		std::vector<int>{18,18,19,20,20,20},
-		std::vector<int>{21,21,22,23,23,23}
+		std::vector<int>{21,21,22,23,23,23},
+		std::vector<int>{16,16,16},
+		std::vector<int>{19,19,19},
+		std::vector<int>{22,22,22}
 	};
 	int currentUpperBodyAnimation;
 	int currentUpperBodyFrame = 0;
@@ -191,7 +197,7 @@ public:
 		else
 		{
 			currentLegsAnimation = 3;
-			currentUpperBodyAnimation = 9;
+			currentUpperBodyAnimation = 13;
 			up = sf::Keyboard::Up;
 			right = sf::Keyboard::Right;
 			down = sf::Keyboard::Down;
@@ -368,6 +374,12 @@ public:
 		inputDodge = false;
 		inputSkill = false;
 	}
+
+	void GotBlocked()
+	{
+
+	}
+
 
 	bool Tick()
 	{
@@ -578,7 +590,7 @@ public:
 
 			currentUpperBodyFrame++;
 
-			if (currentUpperBodyFrame == firstActiveAttackFrame)
+			if (currentUpperBodyFrame == firstActiveAttackFrame && ((currentUpperBodyAnimation > 5 && currentUpperBodyAnimation < 9)||(currentUpperBodyAnimation > 17 && currentUpperBodyAnimation < 21)))
 			{
 				hitboxActive = true;
 			}
@@ -586,6 +598,7 @@ public:
 			{
 				hitboxActive = false;
 			}
+
 
 			if (currentUpperBodyFrame == upperBodyAnimation[currentUpperBodyAnimation].size())
 			{
@@ -601,27 +614,49 @@ public:
 						{
 							currentUpperBodyAnimation++;
 						}
+						if (currentLegsAnimation > 2)
+						{
+							currentUpperBodyAnimation = blocking + 1;
+						}
 					}
 					else
 					{
-						if (blocking + 1 < currentUpperBodyAnimation-9)
+						if (blocking + 1 < currentUpperBodyAnimation-12)
 						{
 							currentUpperBodyAnimation--;
 						}
-						if (blocking + 1 > currentUpperBodyAnimation-9)
+						if (blocking + 1 > currentUpperBodyAnimation-12)
 						{
 							currentUpperBodyAnimation++;
 						}
+						if (currentLegsAnimation < 12 || currentLegsAnimation > 14)
+						{
+							currentUpperBodyAnimation = blocking + 13;
+						}
 					}
 				}
-				if (inputAttack && !isCharging && canAttack)
+
+				if (currentUpperBodyAnimation > 8 && currentUpperBodyAnimation < 12 || currentUpperBodyAnimation > 20)
+				{
+					currentUpperBodyAnimation -= 9;
+					attackFrame = 0;
+					isAttacking = false;
+					canAttack = true;
+					canWalk = true;
+					canDodge = true;
+					canBlock = true;
+					canTurn = true;
+					canGrab = true;
+					exhaustion += staminaUse;
+				}
+				else if (inputAttack && !isCharging && canAttack)
 				{
 					canBlock = false;
 					isCharging = true;
 					canGrab = false;
 					canAttack = false;
 					canTurn = false;
-					currentUpperBodyAnimation = direction == 1 ? inputVertical + 1 + 3 : inputVertical + 1 + 12;
+					currentUpperBodyAnimation = direction == 1 ? inputVertical + 1 + 3 : inputVertical + 1 + 15;
 				}
 				else if (isCharging)
 				{
@@ -640,11 +675,11 @@ public:
 						}
 						else
 						{
-							if (inputVertical + 1 < currentUpperBodyAnimation - 12)
+							if (inputVertical + 1 < currentUpperBodyAnimation - 15)
 							{
 								currentUpperBodyAnimation--;
 							}
-							if (inputVertical + 1 > currentUpperBodyAnimation - 12)
+							if (inputVertical + 1 > currentUpperBodyAnimation - 15)
 							{
 								currentUpperBodyAnimation++;
 							}
@@ -654,7 +689,7 @@ public:
 					}
 					else 
 					{
-						currentUpperBodyAnimation = direction == 1 ? inputVertical + 7 : inputVertical + 16;
+						currentUpperBodyAnimation = direction == 1 ? inputVertical + 7 : inputVertical + 19;
 						attackState = inputVertical;
 						canWalk = false;
 						isAttacking = true;
