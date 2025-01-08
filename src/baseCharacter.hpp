@@ -180,7 +180,7 @@ public:
 		if (!isPlayer2)
 		{
 			currentLegsAnimation = 0;
-			currentUpperBodyAnimation = 0;
+			currentUpperBodyAnimation = 1;
 			up = sf::Keyboard::W;
 			right = sf::Keyboard::D;
 			down = sf::Keyboard::S;
@@ -211,6 +211,13 @@ public:
 			direction = -1;
 			player2 = true;
 		}
+
+		legsRectSource.left = legsAnimation[currentLegsAnimation][currentLegsFrame] * 34;
+		legsSprite.setTextureRect(legsRectSource);
+
+		upperBodyRectSource.left = upperBodyAnimation[currentUpperBodyAnimation][currentUpperBodyFrame] * 127;
+		upperBodySprite.setTextureRect(upperBodyRectSource);
+		upperBodyColorSprite.setTextureRect(upperBodyRectSource);
 	}
 
 	void Reset()
