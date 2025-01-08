@@ -6,6 +6,7 @@
 #include "baseCharacter.hpp"
 #include "neuralNetwork.hpp"
 #include "trainingPair.hpp"
+#include "CPU.hpp"
 #include <string>
 #include <random>
 #include <fstream>
@@ -30,6 +31,7 @@ int main()
     {
         pairs.push_back({ true,0,0,512,0,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 100, 100, 100, 100, 100, 7}),NeuralNetwork(std::vector<int>{13,100, 100, 100, 100, 100, 7})});
     }
+
 
     auto window = sf::RenderWindow{ { 512u, 128u }, "Falling Blade" };
     BaseCharacter player1(false);
