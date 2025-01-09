@@ -97,7 +97,7 @@ public:
 	bool hitboxActive = false;
 	int attackState = 0;
 	float highAttackRange = 32;
-	float attackRange = 64;
+	float attackRange = 75;
 	float lowAttackRange = 32;
 
 	float distToEdge1;
