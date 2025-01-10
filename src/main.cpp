@@ -37,6 +37,8 @@ int main()
     BaseCharacter player1(false);
     BaseCharacter player2(true);
 
+    HardCodedCPU test;
+
     sf::Clock globalTime;
     sf::Clock trainingTime;
 
@@ -595,6 +597,8 @@ int main()
                                 }
                             }
                         }
+                        player2.Input(test.inputs(player1, player2));
+
                         first = false;
                         if (player1.Tick())
                         {
@@ -795,6 +799,7 @@ int main()
                                 std::to_string(frame) + "|"
                                 ;
                         }
+
                         globalTime.restart();
                     }
                     else

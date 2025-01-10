@@ -228,12 +228,16 @@ public:
 		gravity = 0;
 		if (!player2)
 		{
+			currentLegsAnimation = 0;
+			currentUpperBodyAnimation = 1;
 			sprite.setFillColor(sf::Color::Blue);
 			SetPosition(96);
 			direction = 1;
 		}
 		else
 		{
+			currentLegsAnimation = 3;
+			currentUpperBodyAnimation = 13;
 			sprite.setFillColor(sf::Color::Red);
 			SetPosition(416);
 			direction = -1;
@@ -241,11 +245,11 @@ public:
 	}
 	void Input(std::vector<double> inputs)
 	{
-		if (inputs[0] > 0.9 && inputs[1] < 0.9)
+		if (inputs[0] >= 1 && inputs[1] <= 1)
 		{
 			inputVertical = 1;
 		}
-		else if (inputs[0] < 0.9 && inputs[1] > 0.9)
+		else if (inputs[0] <= 1 && inputs[1] >= 1)
 		{
 			inputVertical = -1;
 		}
@@ -254,40 +258,22 @@ public:
 			inputVertical = 0;
 		}
 
-		if (player2)
+		if (inputs[2] >= 1 && inputs[3] <= 1)
 		{
-			if (inputs[2] > 0.9 && inputs[3] < 0.9)
-			{
-				inputHorizontal = 1;
-			}
-			else if (inputs[2] < 0.9 && inputs[3] > 0.9)
-			{
-				inputHorizontal = -1;
-			}
-			else
-			{
-				inputHorizontal = 0;
-			}
+			inputHorizontal = 1;
+		}
+		else if (inputs[2] <= 1 && inputs[3] >= 1)
+		{
+			inputHorizontal = -1;
 		}
 		else
 		{
-			if (inputs[2] < 0.9 && inputs[3] > 0.9)
-			{
-				inputHorizontal = 1;
-			}
-			else if (inputs[2] > 0.9 && inputs[3] < 0.9)
-			{
-				inputHorizontal = -1;
-			}
-			else
-			{
-				inputHorizontal = 0;
-			}
+			inputHorizontal = 0;
 		}
 
-		inputAttack = inputs[4] > 0.9;
-		inputDodge = inputs[5] > 0.9;
-		inputSkill = inputs[6] > 0.9;
+		inputAttack = inputs[4] >= 1;
+		inputDodge = inputs[5] >= 1;
+		inputSkill = inputs[6] >= 1;
 	}
 	void Input()
 	{
