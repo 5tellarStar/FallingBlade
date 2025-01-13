@@ -93,7 +93,7 @@ public:
 	int firstActiveAttackFrame = 3;
 	int lastActiveAttackFrame = 4;
 
-	float attackVelocity = 7;
+	float attackVelocity = 10;
 	bool hitboxActive = false;
 	int attackState = 0;
 	float highAttackRange = 32;
@@ -242,7 +242,37 @@ public:
 			SetPosition(416);
 			direction = -1;
 		}
+		currentLegsFrame = 0;
+		currentUpperBodyFrame = 0;
 	}
+
+	void TrueReset()
+	{
+		velocity = 0;
+		dead = false;
+		top = 64;
+		gravity = 0;
+		winCount = 0;
+		if (!player2)
+		{
+			currentLegsAnimation = 0;
+			currentUpperBodyAnimation = 1;
+			sprite.setFillColor(sf::Color::Blue);
+			SetPosition(96);
+			direction = 1;
+		}
+		else
+		{
+			currentLegsAnimation = 3;
+			currentUpperBodyAnimation = 13;
+			sprite.setFillColor(sf::Color::Red);
+			SetPosition(416);
+			direction = -1;
+		}
+		currentLegsFrame = 0;
+		currentUpperBodyFrame = 0;
+	}
+
 	void Input(std::vector<double> inputs)
 	{
 		if (inputs[0] >= 1 && inputs[1] <= 1)
@@ -366,11 +396,6 @@ public:
 		inputAttack = false;
 		inputDodge = false;
 		inputSkill = false;
-	}
-
-	void GotBlocked()
-	{
-
 	}
 
 

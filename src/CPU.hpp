@@ -54,7 +54,6 @@ public:
 		switch (state)
 		{
 		case HardCodedCPU::Approach:
-
 			break;
 		case HardCodedCPU::Retreat:
 			break;
@@ -71,19 +70,24 @@ public:
 			}
 			else
 			{
-				if (distToTarget > (int)self.dodges * 40 + self.charge * 9 && !forward)
+				if (distToTarget > (int)self.dodges * 30 + self.charge * 15 && !forward)
 				{
 					inputs[4] = 1;
 				}
 				else
 				{
-					if (Target.blocking == self.inputVertical)
+					vertical = rand() % 3 - 1;
+					if (Target.blocking == vertical)
 					{
-							vertical = rand() % 3 - 1;
-							if (Target.blocking == vertical)
-							{
-								vertical += rand() % 2 == 1 ? -1 : 1;
-							}
+						vertical += rand() % 2 == 1 ? -1 : 1;
+						if (vertical < -1)
+						{
+							vertical = -1;
+						}
+						if (vertical > 1)
+						{
+							vertical = 1;
+						}
 					}
 					forward = true;
 					if (self.canDodge)
@@ -107,20 +111,24 @@ public:
 			}
 			break;
 		case HardCodedCPU::Retreat:
+			vertical = Target.attackState;
+
 			break;
 		case HardCodedCPU::Push:
 			break;
 		}
 
+		
+
 		switch (vertical)
 		{
 		case -1:
-			inputs[0] = 1;
+			inputs[1] = 1;
  			break;
 		case 0:
 			break;
 		case 1:
-			inputs[1] = 1;
+			inputs[0] = 1;
 			break;
 		}
 

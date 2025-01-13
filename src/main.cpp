@@ -11,7 +11,7 @@
 #include <random>
 #include <fstream>
 
-
+bool fightingCPU = false;
 int ImpactFrame = 0;
 bool battling = false;
 bool first = true;
@@ -126,8 +126,9 @@ int main()
             globalTime.restart();
         }
 
-        if (selectedButton == 0 && sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+        if ((selectedButton == 0 || selectedButton == 1)&& sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
         {
+            fightingCPU = selectedButton == 1;
             while (view.getCenter().y != 64)
             {
                 window.clear(sf::Color(51, 173, 255, 0));
@@ -149,7 +150,7 @@ int main()
                 window.draw(player2.upperBodyColorSprite);
                 window.display();
             }
-            while ((player1.winCount < winsToWin && player2.winCount < winsToWin))
+            while (((player1.winCount < winsToWin && player2.winCount < winsToWin) || !sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)))
             {
                 window.clear(sf::Color(51, 173, 255, 0));
                 window.draw(platformSprite);
@@ -599,7 +600,7 @@ int main()
                                 }
                             }
                         }
-                        if (!player1.dead && !player2.dead)
+                        if (!player1.dead && !player2.dead && fightingCPU)
                             player2.Input(test.inputs(player1, player2));
 
                         first = false;
@@ -715,7 +716,7 @@ int main()
                                     player2.sprite.setFillColor(sf::Color::Black);
                                     player2.AddForce((tempVel1 - tempVel2 + player1.attackVelocity * player1.direction) * player1.mass);
                                 }
-                                player1.velocity = player1.direction * -1 * (player1.attackVelocity);
+                                player1.velocity = player1.direction * -1 * (player1.attackVelocity/2);
                                 ImpactFrame = 5;
                             }
                             player1.hitboxActive = false;
@@ -744,7 +745,7 @@ int main()
                                     player1.sprite.setFillColor(sf::Color::Black);
                                     player1.AddForce((tempVel2 - tempVel1 + player2.attackVelocity * player2.direction) * player2.mass);
                                 }
-                                player2.velocity = player2.direction * -1 * (player2.attackVelocity);
+                                player2.velocity = player2.direction * -1 * (player2.attackVelocity/2);
                                 ImpactFrame = 5;
                             }
                             player2.hitboxActive = false;
@@ -860,8 +861,9 @@ int main()
                 window.draw(player2.upperBodyColorSprite);
                 window.display();
             }
-            player1 = BaseCharacter(false);
-            player2 = BaseCharacter(true);
+            player1.TrueReset();
+            player2.TrueReset();
+            test.Reset();
         }
 
         selectorSprite.setPosition(190, selectedButton * 40 - 156);
