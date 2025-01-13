@@ -569,7 +569,7 @@ int main()
                         frame = 0;
                     }
 
-                    if (globalTime.getElapsedTime().asSeconds() > (1.f / 12.f) && ImpactFrame == 0)
+                    if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f) && ImpactFrame == 0)
                     {
 
                         if (!first)
@@ -700,8 +700,9 @@ int main()
                             }
                             else
                             {
-                                if (player1.attackState == player2.blocking)
+                                if (player1.attackState == player2.blocking && player2.canBlock)
                                 {
+
                                     player1.upperBodyRectSource.left -= 127;
                                     player1.upperBodyColorSprite.setTextureRect(player1.upperBodyRectSource);
                                     player1.upperBodySprite.setTextureRect(player1.upperBodyRectSource);
@@ -713,6 +714,15 @@ int main()
                                 }
                                 else
                                 {
+                                    player2.canTurn = true;
+                                    player2.canAttack = true;
+                                    player2.canBlock = true;
+                                    player2.charge = 0;
+                                    player2.isAttacking = false;
+                                    player2.isCharging = false;
+                                    player2.hitboxActive = false;
+                                    player2.currentUpperBodyFrame = 0;
+                                    player2.currentUpperBodyAnimation = player2.direction == 1 ? player2.inputVertical + 1 : player2.inputVertical + 13;
                                     player2.sprite.setFillColor(sf::Color::Black);
                                     player2.AddForce((tempVel1 - tempVel2 + player1.attackVelocity * player1.direction) * player1.mass);
                                 }
@@ -729,7 +739,7 @@ int main()
                             }
                             else
                             {
-                                if (player2.attackState == player1.blocking)
+                                if (player2.attackState == player1.blocking && player1.canBlock)
                                 {
                                     player2.upperBodyRectSource.left -= 127;
                                     player2.upperBodyColorSprite.setTextureRect(player2.upperBodyRectSource);
@@ -742,6 +752,15 @@ int main()
                                 }
                                 else
                                 {
+                                    player1.canTurn = true;
+                                    player1.canAttack = true;
+                                    player1.canBlock = true;
+                                    player1.charge = 0;
+                                    player1.isAttacking = false;
+                                    player1.isCharging = false;
+                                    player1.hitboxActive = false;
+                                    player1.currentUpperBodyFrame = 0;
+                                    player1.currentUpperBodyAnimation = player1.direction == 1 ? player1.inputVertical + 1 : player1.inputVertical + 13;
                                     player1.sprite.setFillColor(sf::Color::Black);
                                     player1.AddForce((tempVel2 - tempVel1 + player2.attackVelocity * player2.direction) * player2.mass);
                                 }

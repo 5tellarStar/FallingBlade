@@ -27,7 +27,7 @@ public:
 	enum CPUstate
 	{
 		Approach,
-		Retreat,
+		Defend,
 		Push
 	};
 	CPUstate state = Approach;
@@ -47,17 +47,42 @@ public:
 	{
 		float distToTarget = fabs(Target.position - self.position);
 
-		bool advantage = (Target.distToEdge1 < Target.distToEdge2 && self.distToEdge1 > Target.distToEdge1 && self.distToEdge1 < self.distToEdge2) || (Target.distToEdge2 < Target.distToEdge1 && self.distToEdge2 > Target.distToEdge2 && self.distToEdge2 < self.distToEdge1);
+		bool advantage = (Target.distToEdge1 < Target.distToEdge2 && self.distToEdge1 > Target.distToEdge1 && self.distToEdge1 < self.distToEdge2) || 
+			(Target.distToEdge2 < Target.distToEdge1 && self.distToEdge2 > Target.distToEdge2 && self.distToEdge2 < self.distToEdge1);
+		bool disadvantage = (Target.distToEdge1 < Target.distToEdge2 && self.distToEdge1 < Target.distToEdge1 && self.distToEdge1 < self.distToEdge2) || 
+			(Target.distToEdge2 < Target.distToEdge1 && self.distToEdge2 < Target.distToEdge2 && self.distToEdge2 < self.distToEdge1);
 
 		std::vector<double> inputs = { 0,0,0,0,0,0,0 };
 
 		switch (state)
 		{
 		case HardCodedCPU::Approach:
+			if (self.isAttacking && self.currentUpperBodyFrame == self.firstActiveAttackFrame - 1)
+			{
+				state = Push;
+			}
 			break;
-		case HardCodedCPU::Retreat:
+		case HardCodedCPU::Defend:
+			if (advantage)
+			{
+				state = Defend;
+			}
+			if (distToTarget > 150)
+			{
+				state = Approach;
+				forward = false;
+			}
 			break;
 		case HardCodedCPU::Push:
+			if (disadvantage)
+			{
+				state = Defend;
+			}
+			if (distToTarget > 150)
+			{
+				state = Approach;
+				forward = false;
+			}
 			break;
 		}
 
@@ -110,7 +135,7 @@ public:
 				inputs[3] = 1;
 			}
 			break;
-		case HardCodedCPU::Retreat:
+		case HardCodedCPU::Defend:
 			vertical = Target.attackState;
 
 			break;
