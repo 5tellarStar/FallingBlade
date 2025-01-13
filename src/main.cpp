@@ -11,6 +11,7 @@
 #include <random>
 #include <fstream>
 
+
 int ImpactFrame = 0;
 bool battling = false;
 bool first = true;
@@ -563,6 +564,7 @@ int main()
                     {
                         player1.Reset();
                         player2.Reset();
+                        test.Reset();
                         frame = 0;
                     }
 
@@ -597,7 +599,8 @@ int main()
                                 }
                             }
                         }
-                        player2.Input(test.inputs(player1, player2));
+                        if (!player1.dead && !player2.dead)
+                            player2.Input(test.inputs(player1, player2));
 
                         first = false;
                         if (player1.Tick())
@@ -836,6 +839,29 @@ int main()
                 window.display();
             }
             window.clear(sf::Color(51, 173, 255, 0));
+            while (view.getCenter().y != -128)
+            {
+                window.clear(sf::Color(51, 173, 255, 0));
+                view.setCenter(view.getCenter().x, view.getCenter().y - 2);
+                window.setView(view);
+                window.draw(titleSprite);
+                window.draw(platformSprite);
+                window.draw(vsHumanSprite);
+                window.draw(vsCPUSprite);
+                window.draw(settingsSprite);
+                window.draw(selectorSprite);
+                window.draw(player1.sprite);
+                window.draw(player1.legsSprite);
+                window.draw(player1.upperBodySprite);
+                window.draw(player1.upperBodyColorSprite);
+                window.draw(player2.sprite);
+                window.draw(player2.legsSprite);
+                window.draw(player2.upperBodySprite);
+                window.draw(player2.upperBodyColorSprite);
+                window.display();
+            }
+            player1 = BaseCharacter(false);
+            player2 = BaseCharacter(true);
         }
 
         selectorSprite.setPosition(190, selectedButton * 40 - 156);

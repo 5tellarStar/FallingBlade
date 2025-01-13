@@ -1,4 +1,7 @@
 #include "baseCharacter.hpp"
+#include <random>
+
+#pragma once
 
 class CPU
 {
@@ -29,12 +32,21 @@ public:
 	};
 	CPUstate state = Approach;
 
+
 	bool forward = false;
+
+	int vertical = 0;
+
+	void Reset()
+	{
+		forward = false;
+		vertical = 0;
+	}
 
 	std::vector<double> inputs(BaseCharacter Target, BaseCharacter self)
 	{
 		float distToTarget = fabs(Target.position - self.position);
-		
+
 		bool advantage = (Target.distToEdge1 < Target.distToEdge2 && self.distToEdge1 > Target.distToEdge1 && self.distToEdge1 < self.distToEdge2) || (Target.distToEdge2 < Target.distToEdge1 && self.distToEdge2 > Target.distToEdge2 && self.distToEdge2 < self.distToEdge1);
 
 		std::vector<double> inputs = { 0,0,0,0,0,0,0 };
@@ -42,7 +54,7 @@ public:
 		switch (state)
 		{
 		case HardCodedCPU::Approach:
-			
+
 			break;
 		case HardCodedCPU::Retreat:
 			break;
@@ -65,6 +77,14 @@ public:
 				}
 				else
 				{
+					if (Target.blocking == self.inputVertical)
+					{
+							vertical = rand() % 3 - 1;
+							if (Target.blocking == vertical)
+							{
+								vertical += rand() % 2 == 1 ? -1 : 1;
+							}
+					}
 					forward = true;
 					if (self.canDodge)
 					{
@@ -92,6 +112,17 @@ public:
 			break;
 		}
 
+		switch (vertical)
+		{
+		case -1:
+			inputs[0] = 1;
+ 			break;
+		case 0:
+			break;
+		case 1:
+			inputs[1] = 1;
+			break;
+		}
 
 		return inputs;
 	}
