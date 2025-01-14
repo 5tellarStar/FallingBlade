@@ -148,6 +148,11 @@ int main()
                 window.draw(player2.legsSprite);
                 window.draw(player2.upperBodySprite);
                 window.draw(player2.upperBodyColorSprite);
+                for (int i = 0; i < 3; i++)
+                {
+                    window.draw(player1.Stamina[i]);
+                    window.draw(player2.Stamina[i]);
+                }
                 window.display();
             }
             while (((player1.winCount < winsToWin && player2.winCount < winsToWin) || !sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)))
@@ -561,7 +566,7 @@ int main()
                         player1.Input();
                         player2.Input();
                     }
-                    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+                    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && player1.currentLegsFrame == 0 && player1.currentUpperBodyFrame == 0 && player2.currentLegsFrame == 0 && player2.currentUpperBodyFrame == 0)
                     {
                         player1.Reset();
                         player2.Reset();
@@ -601,7 +606,9 @@ int main()
                             }
                         }
                         if (!player1.dead && !player2.dead && fightingCPU)
+                        {
                             player2.Input(test.inputs(player1, player2));
+                        }
 
                         first = false;
                         if (player1.Tick())
@@ -843,6 +850,11 @@ int main()
                         window.draw(player1.legsSprite);
                         window.draw(player1.upperBodySprite);
                         window.draw(player1.upperBodyColorSprite);
+                        for (int i = 0; i < 3; i++)
+                        {
+                            window.draw(player1.Stamina[i]);                            
+                            window.draw(player2.Stamina[i]);
+                        }
                     }
                     else
                     {
@@ -854,6 +866,11 @@ int main()
                         window.draw(player2.legsSprite);
                         window.draw(player2.upperBodySprite);
                         window.draw(player2.upperBodyColorSprite);
+                        for (int i = 0; i < 3; i++)
+                        {
+                            window.draw(player1.Stamina[i]);
+                            window.draw(player2.Stamina[i]);
+                        }
                     }
                 }
                 window.display();
@@ -878,6 +895,11 @@ int main()
                 window.draw(player2.legsSprite);
                 window.draw(player2.upperBodySprite);
                 window.draw(player2.upperBodyColorSprite);
+                for (int i = 0; i < 3; i++)
+                {
+                    window.draw(player1.Stamina[i]);
+                    window.draw(player2.Stamina[i]);
+                }
                 window.display();
             }
             player1.TrueReset();

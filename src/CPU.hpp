@@ -58,7 +58,7 @@ public:
 		switch (state)
 		{
 		case HardCodedCPU::Approach:
-			if ((self.isAttacking && self.currentUpperBodyFrame == self.firstActiveAttackFrame - 1) || distToTarget < 20)
+			if ((self.isAttacking && self.currentUpperBodyFrame == self.firstActiveAttackFrame - 1) || distToTarget < 50 || (AttackingApproch && ((self.velocity < 0&& Target.position - self.position < 0)||(self.velocity > 0 && Target.position - self.position > 0))))
 			{
 				state = Push;
 			}
@@ -97,7 +97,7 @@ public:
 			}
 			else
 			{
-				if (distToTarget > (int)self.dodges * 50 + self.charge * 10 && !AttackingApproch)
+				if (distToTarget > ((int)self.dodges - 1) * 20 + self.charge * 15 && !AttackingApproch)
 				{
 					inputs[4] = 1;
 				}
@@ -117,7 +117,7 @@ public:
 						}
 					}
 					AttackingApproch = true;
-					if (self.canDodge && distToTarget > 100)
+					if (self.canDodge && distToTarget > 100 && self.dodges >= 2)
 					{
 						inputs[5] = 1;
 					}
@@ -139,14 +139,14 @@ public:
 			break;
 		case HardCodedCPU::Defend:
 			vertical = Target.attackState;
-			if (self.dodges >= 2 && !dashPast)
+			if (self.dodges >= 3 && !dashPast)
 			{
 				dashPast = true;
 			}
 
 			if (dashPast)
 			{
-				if (self.canDodge)
+				if (self.canDodge && self.dodges >= 2)
 				{
 					inputs[5] = 1;
 				}
@@ -191,7 +191,7 @@ public:
 
 			break;
 		case HardCodedCPU::Push:
-			if (self.canAttack && distToTarget < 100)
+			if (self.canAttack && distToTarget < 100 && self.dodges >= 2)
 			{
 				vertical = rand() % 3 - 1;
 				if (Target.blocking == vertical)
@@ -208,7 +208,7 @@ public:
 				}
 				inputs[4] = 1;
 			}
-			if (self.isAttacking && self.currentUpperBodyFrame == self.firstActiveAttackFrame - 1)
+			if (self.isAttacking && self.currentUpperBodyFrame == self.firstActiveAttackFrame - 1 && self.dodges >= 2)
 			{
 				inputs[5] = 1;
 
@@ -246,33 +246,20 @@ public:
 			break;
 		}
 
-		if (self.distToEdge1 < self.distToEdge2)
+		if (self.position + self.velocity > 420 && self.canDodge)
 		{
-			if (self.velocity > 0)
-			{
-				if (self.distToEdge2 - self.velocity <= 0)
-				{
-					inputs[5] = 1;
+			inputs[5] = 1;
 
-					inputs[2] = 0;
-					inputs[3] = 1;
-				}
-			}
+			inputs[2] = 0;
+			inputs[3] = 1;
 		}
-		else
+		if (self.position + self.velocity < 92 && self.canDodge)
 		{
-			if (self.velocity < 0)
-			{
-				if (self.distToEdge1 + self.velocity <= 0)
-				{
-					inputs[5] = 1;
+			inputs[5] = 1;
 
-					inputs[2] = 1;
-					inputs[3] = 0;
-				}
-			}
+			inputs[2] = 1;
+			inputs[3] = 0;
 		}
-
 
 		switch (vertical)
 		{

@@ -57,6 +57,8 @@ public:
 
 	sf::RectangleShape sprite;
 
+	sf::RectangleShape Stamina[3] = {sf::RectangleShape(sf::Vector2f(6,3)),sf::RectangleShape(sf::Vector2f(6,3)),sf::RectangleShape(sf::Vector2f(6,3))};
+
 	bool canBlock = true;
 	int blocking = 0;
 	bool blocked = false;
@@ -175,7 +177,9 @@ public:
 		legsTexture.loadFromFile("Legs.png");
 		upperBodyTexture.loadFromFile("UpperBody.png");
 		upperBodyColorTexture.loadFromFile("UpperBodyColor.png");
-
+		Stamina[0].setFillColor(sf::Color::Green);
+		Stamina[1].setFillColor(sf::Color::Green);
+		Stamina[2].setFillColor(sf::Color::Green);
 
 		if (!isPlayer2)
 		{
@@ -226,6 +230,7 @@ public:
 		dead = false;
 		top = 64;
 		gravity = 0;
+		dodges = MaxDodges;
 		if (!player2)
 		{
 			currentLegsAnimation = 0;
@@ -253,6 +258,7 @@ public:
 		top = 64;
 		gravity = 0;
 		winCount = 0;
+		dodges = MaxDodges;
 		if (!player2)
 		{
 			currentLegsAnimation = 0;
@@ -341,6 +347,9 @@ public:
 	void SetPosition(float pos)
 	{
 		position = pos;
+		Stamina[0].setPosition(pos - 10, top-10);
+		Stamina[1].setPosition(pos - 3, top-10);
+		Stamina[2].setPosition(pos + 4, top-10);
 		legsSprite.setPosition(sf::Vector2f(pos - 17, top + 28));
 		upperBodySprite.setPosition(sf::Vector2f(pos - 63, top - 30 - legsAnimationBodyOffset[currentLegsAnimation][currentLegsFrame]));
 		upperBodyColorSprite.setPosition(sf::Vector2f(pos - 63, top - 30 - legsAnimationBodyOffset[currentLegsAnimation][currentLegsFrame]));
@@ -502,8 +511,30 @@ public:
 		{
 			canDodge = true;
 		}
-
-
+		if (dodges >= 3)
+		{
+			Stamina[0].setFillColor(sf::Color::Green);
+			Stamina[1].setFillColor(sf::Color::Green);
+			Stamina[2].setFillColor(sf::Color::Green);
+		}
+		else if (dodges >= 2)
+		{
+			Stamina[0].setFillColor(sf::Color::Green);
+			Stamina[1].setFillColor(sf::Color::Green);
+			Stamina[2].setFillColor(sf::Color::Black);
+		}
+		else if(dodges >= 1)
+		{
+			Stamina[0].setFillColor(sf::Color::Green);
+			Stamina[1].setFillColor(sf::Color::Black);
+			Stamina[2].setFillColor(sf::Color::Black);
+		}
+		else
+		{
+			Stamina[0].setFillColor(sf::Color::Black);
+			Stamina[1].setFillColor(sf::Color::Black);
+			Stamina[2].setFillColor(sf::Color::Black);
+		}
 		/*
 		if (canWalk)
 		{
