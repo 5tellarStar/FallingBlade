@@ -93,7 +93,7 @@ public:
 	int firstActiveAttackFrame = 3;
 	int lastActiveAttackFrame = 4;
 
-	float attackVelocity = 10;
+	float attackVelocity = 12;
 	bool hitboxActive = false;
 	int attackState = 0;
 	float highAttackRange = 32;
@@ -481,7 +481,7 @@ public:
 		}
 		*/
 
-		if (dodges < MaxDodges)
+		if (dodges <= MaxDodges)
 		{
 			dodges += dodgeCharge;
 		}

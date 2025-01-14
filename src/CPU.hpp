@@ -33,13 +33,14 @@ public:
 	CPUstate state = Approach;
 
 
-	bool forward = false;
+	bool AttackingApproch = false;
+	bool dashPast = false;
 
 	int vertical = 0;
 
 	void Reset()
 	{
-		forward = false;
+		AttackingApproch = false;
 		vertical = 0;
 	}
 
@@ -57,7 +58,7 @@ public:
 		switch (state)
 		{
 		case HardCodedCPU::Approach:
-			if (self.isAttacking && self.currentUpperBodyFrame == self.firstActiveAttackFrame - 1)
+			if ((self.isAttacking && self.currentUpperBodyFrame == self.firstActiveAttackFrame - 1) || distToTarget < 20)
 			{
 				state = Push;
 			}
@@ -65,23 +66,24 @@ public:
 		case HardCodedCPU::Defend:
 			if (advantage)
 			{
-				state = Defend;
+				state = Push;
 			}
 			if (distToTarget > 150)
 			{
 				state = Approach;
-				forward = false;
+				AttackingApproch = false;
 			}
 			break;
 		case HardCodedCPU::Push:
 			if (disadvantage)
 			{
 				state = Defend;
+				dashPast = false;
 			}
 			if (distToTarget > 150)
 			{
 				state = Approach;
-				forward = false;
+				AttackingApproch = false;
 			}
 			break;
 		}
@@ -89,13 +91,13 @@ public:
 		switch (state)
 		{
 		case HardCodedCPU::Approach:
-			if (!self.isCharging && !forward)
+			if (!self.isCharging && !AttackingApproch)
 			{
 				inputs[4] = 1;
 			}
 			else
 			{
-				if (distToTarget > (int)self.dodges * 30 + self.charge * 15 && !forward)
+				if (distToTarget > (int)self.dodges * 50 + self.charge * 10 && !AttackingApproch)
 				{
 					inputs[4] = 1;
 				}
@@ -114,8 +116,8 @@ public:
 							vertical = 1;
 						}
 					}
-					forward = true;
-					if (self.canDodge)
+					AttackingApproch = true;
+					if (self.canDodge && distToTarget > 100)
 					{
 						inputs[5] = 1;
 					}
@@ -137,13 +139,140 @@ public:
 			break;
 		case HardCodedCPU::Defend:
 			vertical = Target.attackState;
+			if (self.dodges >= 2 && !dashPast)
+			{
+				dashPast = true;
+			}
+
+			if (dashPast)
+			{
+				if (self.canDodge)
+				{
+					inputs[5] = 1;
+				}
+				else
+				{
+					inputs[5] = 0;
+				}
+				if (Target.position > self.position)
+				{
+					inputs[2] = 1;
+				}
+				else
+				{
+					inputs[3] = 1;
+				}
+			}
+			else
+			{
+				if (Target.position > self.position)
+				{
+					if (distToTarget > 50 || self.distToEdge2 < 50)
+					{
+						inputs[2] = 1;
+					}
+					else
+					{
+						inputs[3] = 1;
+					}
+				}
+				else
+				{
+					if (distToTarget > 50 || self.distToEdge1 < 50)
+					{
+						inputs[3] = 1;
+					}
+					else
+					{
+						inputs[2] = 1;
+					}
+				}
+			}
 
 			break;
 		case HardCodedCPU::Push:
+			if (self.canAttack && distToTarget < 100)
+			{
+				vertical = rand() % 3 - 1;
+				if (Target.blocking == vertical)
+				{
+					vertical += rand() % 2 == 1 ? -1 : 1;
+					if (vertical < -1)
+					{
+						vertical = -1;
+					}
+					if (vertical > 1)
+					{
+						vertical = 1;
+					}
+				}
+				inputs[4] = 1;
+			}
+			if (self.isAttacking && self.currentUpperBodyFrame == self.firstActiveAttackFrame - 1)
+			{
+				inputs[5] = 1;
+
+				if (Target.position > self.position)
+				{
+					inputs[2] = 1;
+				}
+				else
+				{
+					inputs[3] = 1;
+				}
+			}
+			else if (Target.position > self.position)
+			{
+				if (distToTarget > 50 || self.distToEdge2 < 50)
+				{
+					inputs[2] = 1;
+				}
+				else
+				{
+					inputs[3] = 1;
+				}
+			}
+			else
+			{
+				if (distToTarget > 50 || self.distToEdge1 < 50)
+				{
+					inputs[3] = 1;
+				}
+				else
+				{
+					inputs[2] = 1;
+				}
+			}
 			break;
 		}
 
-		
+		if (self.distToEdge1 < self.distToEdge2)
+		{
+			if (self.velocity > 0)
+			{
+				if (self.distToEdge2 - self.velocity <= 0)
+				{
+					inputs[5] = 1;
+
+					inputs[2] = 0;
+					inputs[3] = 1;
+				}
+			}
+		}
+		else
+		{
+			if (self.velocity < 0)
+			{
+				if (self.distToEdge1 + self.velocity <= 0)
+				{
+					inputs[5] = 1;
+
+					inputs[2] = 1;
+					inputs[3] = 0;
+				}
+			}
+		}
+
 
 		switch (vertical)
 		{
