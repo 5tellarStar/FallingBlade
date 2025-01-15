@@ -38,7 +38,7 @@ int main()
     BaseCharacter player1(false);
     BaseCharacter player2(true);
 
-    HardCodedCPU test;
+    HardCodedCPUImpossiable test;
 
     sf::Clock globalTime;
     sf::Clock trainingTime;
