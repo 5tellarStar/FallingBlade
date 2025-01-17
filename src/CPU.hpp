@@ -8,15 +8,17 @@ class CPU
 public:
 	CPU() 
 	{
-
 	}
-	std::vector<double> inputs()
+	virtual void Reset()
 	{
-
+	}
+	virtual std::vector<double> inputs(BaseCharacter Target, BaseCharacter self)
+	{
+		return std::vector<double>{0, 0, 0, 0, 0, 0, 0};
 	}
 };
 
-class HardCodedCPUImpossiable : CPU
+class HardCodedCPUImpossiable : public CPU
 {
 public:
 	HardCodedCPUImpossiable() 
@@ -38,13 +40,13 @@ public:
 
 	int vertical = 0;
 
-	void Reset()
+	void Reset() override
 	{
 		AttackingApproch = false;
 		vertical = 0;
 	}
 
-	std::vector<double> inputs(BaseCharacter Target, BaseCharacter self)
+	std::vector<double> inputs(BaseCharacter Target, BaseCharacter self) override
 	{
 		float distToTarget = fabs(Target.position - self.position);
 
@@ -279,12 +281,12 @@ public:
 
 };
 
-class HardCodedCPUHard : CPU
+class HardCodedCPUVariable : public CPU
 {
 public:
-	HardCodedCPUHard()
+	HardCodedCPUVariable(int diff)
 	{
-
+		difficulty = diff;
 	}
 
 	enum CPUstate
@@ -293,21 +295,21 @@ public:
 		Defend,
 		Push
 	};
-	CPUstate state = Approach;
+	CPUstate state = Push;
 
-
+	int difficulty;
 	bool AttackingApproch = false;
 	bool dashPast = false;
 
 	int vertical = 0;
 
-	void Reset()
+	void Reset() override
 	{
 		AttackingApproch = false;
 		vertical = 0;
 	}
 
-	std::vector<double> inputs(BaseCharacter Target, BaseCharacter self)
+	std::vector<double> inputs(BaseCharacter Target, BaseCharacter self) override
 	{
 		float distToTarget = fabs(Target.position - self.position);
 
@@ -320,30 +322,30 @@ public:
 
 		switch (state)
 		{
-		case HardCodedCPUImpossiable::Approach:
+		case HardCodedCPUVariable::Approach:
 			if ((self.isAttacking && self.currentUpperBodyFrame == self.firstActiveAttackFrame - 1) || distToTarget < 50 || (AttackingApproch && ((self.velocity < 0 && Target.position - self.position < 0) || (self.velocity > 0 && Target.position - self.position > 0))))
 			{
 				state = Push;
 			}
 			break;
-		case HardCodedCPUImpossiable::Defend:
-			if (advantage)
+		case HardCodedCPUVariable::Defend:
+			if (advantage && rand() % difficulty == 0)
 			{
 				state = Push;
 			}
-			if (distToTarget > 150)
+			if (distToTarget > 150 && rand() % difficulty == 0)
 			{
 				state = Approach;
 				AttackingApproch = false;
 			}
 			break;
-		case HardCodedCPUImpossiable::Push:
-			if (disadvantage)
+		case HardCodedCPUVariable::Push:
+			if (disadvantage && rand() % difficulty == 0)
 			{
 				state = Defend;
 				dashPast = false;
 			}
-			if (distToTarget > 150)
+			if (distToTarget > 150 && rand() % difficulty == 0)
 			{
 				state = Approach;
 				AttackingApproch = false;
@@ -353,7 +355,7 @@ public:
 
 		switch (state)
 		{
-		case HardCodedCPUImpossiable::Approach:
+		case HardCodedCPUVariable::Approach:
 			if (!self.isCharging && !AttackingApproch)
 			{
 				inputs[4] = 1;
@@ -367,7 +369,7 @@ public:
 				else
 				{
 					vertical = rand() % 3 - 1;
-					if (Target.blocking == vertical)
+					if (Target.blocking == vertical && rand() % difficulty == 0)
 					{
 						vertical += rand() % 2 == 1 ? -1 : 1;
 						if (vertical < -1)
@@ -400,9 +402,22 @@ public:
 				inputs[3] = 1;
 			}
 			break;
-		case HardCodedCPUImpossiable::Defend:
-			vertical = Target.attackState;
-			if (self.dodges >= 2 && !dashPast)
+		case HardCodedCPUVariable::Defend:
+			if (Target.isAttacking || Target.isCharging)
+			{
+				if (rand() % difficulty == 0)
+				{
+					if (Target.isCharging)
+					{
+						vertical = Target.inputVertical;
+					}
+					else
+					{
+						vertical = Target.attackState;
+					}
+				}
+			}
+			if (self.dodges >= 2 && !dashPast && rand() % difficulty == 0)
 			{
 				dashPast = true;
 			}
@@ -453,11 +468,11 @@ public:
 			}
 
 			break;
-		case HardCodedCPUImpossiable::Push:
-			if (self.canAttack && distToTarget < 100)
+		case HardCodedCPUVariable::Push:
+			if (self.canAttack && distToTarget < 100 && rand() % difficulty == 0)
 			{
 				vertical = rand() % 3 - 1;
-				if (Target.blocking == vertical)
+				if (Target.blocking == vertical && rand() % difficulty == 0)
 				{
 					vertical += rand() % 2 == 1 ? -1 : 1;
 					if (vertical < -1)
@@ -507,6 +522,21 @@ public:
 				}
 			}
 			break;
+		}
+
+		if (self.position + self.velocity > 420 && self.canDodge && rand() % difficulty == 0)
+		{
+			inputs[5] = 1;
+
+			inputs[2] = 0;
+			inputs[3] = 1;
+		}
+		if (self.position + self.velocity < 92 && self.canDodge && rand() % difficulty == 0)
+		{
+			inputs[5] = 1;
+
+			inputs[2] = 1;
+			inputs[3] = 0;
 		}
 
 		switch (vertical)

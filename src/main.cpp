@@ -38,7 +38,7 @@ int main()
     BaseCharacter player1(false);
     BaseCharacter player2(true);
 
-    HardCodedCPUImpossiable test;
+    CPU* test = new HardCodedCPUVariable(1);
 
     sf::Clock globalTime;
     sf::Clock trainingTime;
@@ -570,7 +570,7 @@ int main()
                     {
                         player1.Reset();
                         player2.Reset();
-                        test.Reset();
+                        test->Reset();
                         frame = 0;
                     }
 
@@ -607,7 +607,7 @@ int main()
                         }
                         if (!player1.dead && !player2.dead && fightingCPU)
                         {
-                            player2.Input(test.inputs(player1, player2));
+                            player2.Input((test->inputs(player1, player2)));
                         }
 
                         first = false;
@@ -904,7 +904,7 @@ int main()
             }
             player1.TrueReset();
             player2.TrueReset();
-            test.Reset();
+            test->Reset();
         }
 
         selectorSprite.setPosition(190, selectedButton * 40 - 156);
