@@ -143,6 +143,10 @@ public:
 	sf::Texture upperBodyColorTexture;
 	sf::Sprite upperBodyColorSprite = sf::Sprite(upperBodyColorTexture, upperBodyRectSource);
 
+	sf::Texture slashEffectsTexture;
+	sf::IntRect slashEffectsRectSource = sf::IntRect(0, 0, 210, 128);
+	sf::Sprite slashEffectsSprite = sf::Sprite(slashEffectsTexture, slashEffectsRectSource);
+
 	std::vector<int> upperBodyAnimation[24] = {
 		std::vector<int>{0},
 		std::vector<int>{1},
@@ -177,6 +181,7 @@ public:
 		legsTexture.loadFromFile("Legs.png");
 		upperBodyTexture.loadFromFile("UpperBody.png");
 		upperBodyColorTexture.loadFromFile("UpperBodyColor.png");
+		slashEffectsTexture.loadFromFile("SlashEffects.png");
 		Stamina[0].setFillColor(sf::Color::Green);
 		Stamina[1].setFillColor(sf::Color::Green);
 		Stamina[2].setFillColor(sf::Color::Green);
@@ -347,6 +352,7 @@ public:
 	void SetPosition(float pos)
 	{
 		position = pos;
+		slashEffectsSprite.setPosition(pos-105,top-64);
 		Stamina[0].setPosition(pos - 10, top-10);
 		Stamina[1].setPosition(pos - 3, top-10);
 		Stamina[2].setPosition(pos + 4, top-10);
@@ -739,6 +745,8 @@ public:
 					else 
 					{
 						currentUpperBodyAnimation = direction == 1 ? inputVertical + 7 : inputVertical + 19;
+						slashEffectsRectSource.left = (std::clamp<int>(-direction, 0, 2) * 3 + inputVertical + 1) * 210;
+						slashEffectsSprite.setTextureRect(slashEffectsRectSource);
 						attackState = inputVertical;
 						canWalk = false;
 						isAttacking = true;

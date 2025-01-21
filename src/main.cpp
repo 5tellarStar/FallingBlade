@@ -840,7 +840,7 @@ int main()
                             globalTime.restart();
                         }
                     }
-                    if ((player1.currentUpperBodyAnimation > 5 && player1.currentUpperBodyAnimation < 12) || player1.currentUpperBodyAnimation > 17)
+                    if (player1.isAttacking)
                     {
                         window.draw(player2.sprite);
                         window.draw(player2.legsSprite);
@@ -850,6 +850,10 @@ int main()
                         window.draw(player1.legsSprite);
                         window.draw(player1.upperBodySprite);
                         window.draw(player1.upperBodyColorSprite);
+                        if (ImpactFrame != 0)
+                        {
+                            window.draw(player1.slashEffectsSprite);
+                        }
                         for (int i = 0; i < 3; i++)
                         {
                             window.draw(player1.Stamina[i]);                            
