@@ -38,7 +38,7 @@ int main()
     BaseCharacter player1(false);
     BaseCharacter player2(true);
 
-    CPU* test = new HardCodedCPUVariable(1);
+    CPU* test = new HardCodedCPUVariable(2);
 
     sf::Clock globalTime;
     sf::Clock trainingTime;
@@ -155,7 +155,7 @@ int main()
                 }
                 window.display();
             }
-            while (((player1.winCount < winsToWin && player2.winCount < winsToWin) || !sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)))
+            while (((player1.winCount < winsToWin && player2.winCount < winsToWin) || !(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && player1.currentLegsFrame == 0 && player1.currentUpperBodyFrame == 0 && player2.currentLegsFrame == 0 && player2.currentUpperBodyFrame == 0)))
             {
                 window.clear(sf::Color(51, 173, 255, 0));
                 window.draw(platformSprite);
@@ -734,7 +734,7 @@ int main()
                                     player2.AddForce((tempVel1 - tempVel2 + player1.attackVelocity * player1.direction) * player1.mass);
                                 }
                                 player1.velocity = player1.direction * -1 * (player1.attackVelocity/2);
-                                ImpactFrame = 5;
+                                ImpactFrame = 3;
                             }
                             player1.hitboxActive = false;
                         }
@@ -772,7 +772,7 @@ int main()
                                     player1.AddForce((tempVel2 - tempVel1 + player2.attackVelocity * player2.direction) * player2.mass);
                                 }
                                 player2.velocity = player2.direction * -1 * (player2.attackVelocity/2);
-                                ImpactFrame = 5;
+                                ImpactFrame = 3;
                             }
                             player2.hitboxActive = false;
                         }
@@ -780,9 +780,9 @@ int main()
                         {
                             player1.hitboxActive = false;
                             player2.hitboxActive = false;
-                            player1.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player2.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player2.direction) * player2.mass));
-                            player2.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player1.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player1.direction) * player2.mass));
-                            ImpactFrame = 5;
+                            player1.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player2.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player2.direction) * player2.mass)/2);
+                            player2.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player1.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player1.direction) * player2.mass)/2);
+                            ImpactFrame = 3;
                         }
 
                         if (!player1.dead && !player2.dead)
@@ -850,7 +850,7 @@ int main()
                         window.draw(player1.legsSprite);
                         window.draw(player1.upperBodySprite);
                         window.draw(player1.upperBodyColorSprite);
-                        if (ImpactFrame != 0)
+                        if (ImpactFrame != 0 && !((player1.currentUpperBodyAnimation >= 9 && player1.currentUpperBodyAnimation <= 11) || player1.currentUpperBodyAnimation >= 21))
                         {
                             window.draw(player1.slashEffectsSprite);
                         }
@@ -870,6 +870,10 @@ int main()
                         window.draw(player2.legsSprite);
                         window.draw(player2.upperBodySprite);
                         window.draw(player2.upperBodyColorSprite);
+                        if (ImpactFrame != 0 && !((player2.currentUpperBodyAnimation >= 9 && player2.currentUpperBodyAnimation <= 11) || player2.currentUpperBodyAnimation >= 21))
+                        {
+                            window.draw(player2.slashEffectsSprite);
+                        }
                         for (int i = 0; i < 3; i++)
                         {
                             window.draw(player1.Stamina[i]);

@@ -711,6 +711,7 @@ public:
 					canGrab = false;
 					canAttack = false;
 					canTurn = false;
+					canBlock = false;
 					currentUpperBodyAnimation = direction == 1 ? inputVertical + 1 + 3 : inputVertical + 1 + 15;
 				}
 				else if (isCharging)
