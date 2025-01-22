@@ -19,7 +19,9 @@ int winsToWin = 3;
 bool training = false;
 double highestReward = -1;
 int frame = 0;
-int selectedButton;
+int selectedButton = 0;
+int selectedDifficulty = 0;
+bool Settings = false;
 std::vector<TrainingPair> pairs;
 NeuralNetwork bestAi(std::vector<int>{13, 20, 20, 20, 7});
 
@@ -66,6 +68,23 @@ int main()
     sf::Sprite settingsSprite;
     settingsSprite.setTexture(settingsTexture);
     settingsSprite.setPosition(sf::Vector2f(222, -80));
+
+    sf::Texture CPULevelTexture;
+    CPULevelTexture.loadFromFile("CPULevel.png");
+    sf::Sprite CPULevelSprite;
+    CPULevelSprite.setTexture(CPULevelTexture);
+    CPULevelSprite.setPosition(sf::Vector2f(221, -160));
+    CPULevelSprite.setColor(sf::Color::Transparent);
+
+    sf::Texture CPULevelsTexture;
+    CPULevelsTexture.loadFromFile("CPULevels.png");
+    sf::IntRect CPULevelsRectSource = sf::IntRect(74*0, 0, 74, 17);
+    sf::Sprite CPULevelsSprite;
+    CPULevelsSprite.setTextureRect(CPULevelsRectSource);
+    CPULevelsSprite.setTexture(CPULevelsTexture);
+    CPULevelsSprite.setPosition(sf::Vector2f(302, -160));
+    CPULevelsSprite.setColor(sf::Color::Transparent);
+
 
     sf::Texture selectorTexture;
     selectorTexture.loadFromFile("selector.png");
@@ -119,14 +138,16 @@ int main()
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && globalTime.getElapsedTime().asSeconds() > 0.2f)
         {
-            if (selectedButton != 2)
+            if (!(selectedButton == 2|| (Settings && selectedButton == 0)))
             {
                 selectedButton++;
             }
             globalTime.restart();
         }
 
-        if ((selectedButton == 0 || selectedButton == 1)&& sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+
+
+        if ((selectedButton == 0 || selectedButton == 1)&& sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && !Settings)
         {
             fightingCPU = selectedButton == 1;
             while (view.getCenter().y != 64)
@@ -139,6 +160,8 @@ int main()
                 window.draw(vsHumanSprite);
                 window.draw(vsCPUSprite);
                 window.draw(settingsSprite);
+                window.draw(CPULevelSprite);
+                window.draw(CPULevelsSprite);
                 window.draw(selectorSprite);
                 window.draw(player1.sprite);
                 window.draw(player1.legsSprite);
@@ -894,6 +917,8 @@ int main()
                 window.draw(vsHumanSprite);
                 window.draw(vsCPUSprite);
                 window.draw(settingsSprite);
+                window.draw(CPULevelSprite);
+                window.draw(CPULevelsSprite);
                 window.draw(selectorSprite);
                 window.draw(player1.sprite);
                 window.draw(player1.legsSprite);
@@ -915,6 +940,42 @@ int main()
             test->Reset();
         }
 
+        if (selectedButton == 2 && sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+        {
+            globalTime.restart();
+            Settings = true;
+            CPULevelSprite.setColor(sf::Color::White);
+            CPULevelsSprite.setColor(sf::Color::White);
+
+            vsHumanSprite.setColor(sf::Color::Transparent);
+            vsCPUSprite.setColor(sf::Color::Transparent);
+            settingsSprite.setColor(sf::Color::Transparent);
+            selectedButton = 0;
+        }
+
+        if (Settings)
+        {
+            if (selectedButton == 0)
+            {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && globalTime.getElapsedTime().asSeconds() > 0.2f)
+                {
+                    if (selectedDifficulty != 7)
+                    {
+                        selectedDifficulty++;
+                    }
+                    globalTime.restart();
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && globalTime.getElapsedTime().asSeconds() > 0.2f)
+                {
+                    if (selectedDifficulty != 0)
+                    {
+                        selectedDifficulty--;
+                    }
+                    globalTime.restart();
+                }
+            }
+        }
+
         selectorSprite.setPosition(190, selectedButton * 40 - 156);
 
         window.draw(titleSprite);
@@ -922,6 +983,8 @@ int main()
         window.draw(vsHumanSprite);
         window.draw(vsCPUSprite);
         window.draw(settingsSprite);
+        window.draw(CPULevelSprite);
+        window.draw(CPULevelsSprite);
         window.draw(selectorSprite);
         window.display();
     }
