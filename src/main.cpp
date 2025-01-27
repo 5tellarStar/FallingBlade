@@ -16,7 +16,7 @@ int ImpactFrame = 0;
 bool battling = false;
 bool first = true;
 int winsToWin = 3;
-bool training = false;
+bool training = true;
 double highestReward = -1;
 int frame = 0;
 int selectedButton = 0;
@@ -30,9 +30,9 @@ std::uniform_real_distribution<double> dist(-0.2, 0.2);
 
 int main()
 {
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < 3; i++)
     {
-        pairs.push_back({ true,0,0,512,0,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 100, 100, 100, 100, 100, 7}),NeuralNetwork(std::vector<int>{13,100, 100, 100, 100, 100, 7})});
+        pairs.push_back({ true,0,0,512,0,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7}),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7})});
     }
 
 
@@ -465,8 +465,46 @@ int main()
                                 pair.player1.AddForce(((tempVel1 * pair.player1.direction + pair.player1.attackVelocity) * pair.player2.direction * pair.player1.mass + ((tempVel2 * pair.player2.direction + pair.player2.attackVelocity) * pair.player2.direction) * pair.player2.mass));
                                 pair.player2.AddForce(((tempVel1 * pair.player1.direction + pair.player1.attackVelocity) * pair.player1.direction * pair.player1.mass + ((tempVel2 * pair.player2.direction + pair.player2.attackVelocity) * pair.player1.direction) * pair.player2.mass));
                             }
-                            window.draw(pair.player1.sprite);
-                            window.draw(pair.player2.sprite);
+                            if (pair.player1.isAttacking)
+                            {
+                                window.draw(pair.player2.sprite);
+                                window.draw(pair.player2.legsSprite);
+                                window.draw(pair.player2.upperBodySprite);
+                                window.draw(pair.player2.upperBodyColorSprite);
+                                window.draw(pair.player1.sprite);
+                                window.draw(pair.player1.legsSprite);
+                                window.draw(pair.player1.upperBodySprite);
+                                window.draw(pair.player1.upperBodyColorSprite);
+                                if (ImpactFrame != 0 && !((pair.player1.currentUpperBodyAnimation >= 9 && pair.player1.currentUpperBodyAnimation <= 11) || pair.player1.currentUpperBodyAnimation >= 21))
+                                {
+                                    window.draw(pair.player1.slashEffectsSprite);
+                                }
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    window.draw(pair.player1.Stamina[i]);
+                                    window.draw(pair.player2.Stamina[i]);
+                                }
+                            }
+                            else
+                            {
+                                window.draw(pair.player1.sprite);
+                                window.draw(pair.player1.legsSprite);
+                                window.draw(pair.player1.upperBodySprite);
+                                window.draw(pair.player1.upperBodyColorSprite);
+                                window.draw(pair.player2.sprite);
+                                window.draw(pair.player2.legsSprite);
+                                window.draw(pair.player2.upperBodySprite);
+                                window.draw(pair.player2.upperBodyColorSprite);
+                                if (ImpactFrame != 0 && !((pair.player2.currentUpperBodyAnimation >= 9 && pair.player2.currentUpperBodyAnimation <= 11) || pair.player2.currentUpperBodyAnimation >= 21))
+                                {
+                                    window.draw(pair.player2.slashEffectsSprite);
+                                }
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    window.draw(pair.player1.Stamina[i]);
+                                    window.draw(pair.player2.Stamina[i]);
+                                }
+                            }
                             for each (std::vector<sf::CircleShape> vectors in pair.ai1.nodes)
                             {
                                 for each (sf::CircleShape circle in vectors)
@@ -962,17 +1000,59 @@ int main()
                     if (selectedDifficulty != 7)
                     {
                         selectedDifficulty++;
+                        CPULevelsRectSource.left += 74;
+                        CPULevelsSprite.setTextureRect(CPULevelsRectSource);
+                        delete test;
+                        switch (selectedDifficulty)
+                        {
+                        case 0:
+                            test = new HardCodedCPUVariable(1000);
+                            break;
+                        case 1:
+                            test = new HardCodedCPUVariable(5);
+                            break;
+                        case 2:
+                            test = new HardCodedCPUVariable(3);
+                            break;
+                        case 3:
+                            test = new HardCodedCPUVariable(2);
+                            break;
+                        case 4:
+                            test = new HardCodedCPUVariable(1);
+                            break;
+                        case 5:
+                            test = new HardCodedCPUImpossiable();
+                            break;
+                        case 6:
+                            break;
+                        case 7:
+                            break;
+                        }
                     }
                     globalTime.restart();
                 }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && globalTime.getElapsedTime().asSeconds() > 0.2f)
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && globalTime.getElapsedTime().asSeconds() > 0.2f)
                 {
                     if (selectedDifficulty != 0)
                     {
                         selectedDifficulty--;
+                        CPULevelsRectSource.left -= 74;
+                        CPULevelsSprite.setTextureRect(CPULevelsRectSource);
                     }
                     globalTime.restart();
                 }
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace))
+            {
+                Settings = false;
+                CPULevelSprite.setColor(sf::Color::Transparent);
+                CPULevelsSprite.setColor(sf::Color::Transparent);
+
+                vsHumanSprite.setColor(sf::Color::White);
+                vsCPUSprite.setColor(sf::Color::White);
+                settingsSprite.setColor(sf::Color::White);
+                selectedButton = 0;
             }
         }
 
