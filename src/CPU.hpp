@@ -12,7 +12,7 @@ public:
 	virtual void Reset()
 	{
 	}
-	virtual std::vector<double> inputs(BaseCharacter Target, BaseCharacter self)
+	virtual std::vector<double> inputs(BaseCharacter Target, BaseCharacter self, int frame)
 	{
 		return std::vector<double>{0, 0, 0, 0, 0, 0, 0};
 	}
@@ -46,7 +46,7 @@ public:
 		vertical = 0;
 	}
 
-	std::vector<double> inputs(BaseCharacter Target, BaseCharacter self) override
+	std::vector<double> inputs(BaseCharacter Target, BaseCharacter self, int frame) override
 	{
 		float distToTarget = fabs(Target.position - self.position);
 
@@ -309,7 +309,7 @@ public:
 		vertical = 0;
 	}
 
-	std::vector<double> inputs(BaseCharacter Target, BaseCharacter self) override
+	std::vector<double> inputs(BaseCharacter Target, BaseCharacter self, int frame) override
 	{
 		float distToTarget = fabs(Target.position - self.position);
 
@@ -555,4 +555,36 @@ public:
 	}
 
 
+};
+
+class NeuralNetworkCPU : CPU
+{
+	NeuralNetworkCPU(NeuralNetwork ai)
+	{
+		AI = ai;
+	}
+	NeuralNetwork AI = NeuralNetwork(std::vector<int>{0,0,0});
+	std::vector<double> inputs(BaseCharacter Target, BaseCharacter self, int frame) override
+	{
+		return AI.CalcOutputs(std::vector<double>{
+			Target.distToEdge2,
+			Target.distToEdge1,
+			self.distToEdge2,
+			self.distToEdge1,
+			self.position - Target.position,
+			Target.dodges,
+			self.dodges,
+			(double)Target.blocking,
+			(double)self.blocking,
+			(double)Target.firstActiveAttackFrame - Target.attackFrame,
+			(double)self.firstActiveAttackFrame - self.attackFrame,
+			(double)Target.firstActiveGrabFrame - Target.grabFrame,
+			(double)self.firstActiveGrabFrame - self.grabFrame,
+			Target.charge,
+			self.charge,
+			Target.velocity,
+			self.velocity,
+			(double)frame
+		});
+	}
 };
