@@ -16,7 +16,7 @@ int ImpactFrame = 0;
 bool battling = false;
 bool first = true;
 int winsToWin = 3;
-bool training = true;
+bool training = false;
 double highestReward = -1;
 int frame = 0;
 int selectedButton = 0;
@@ -30,12 +30,6 @@ std::uniform_real_distribution<double> dist(-0.2, 0.2);
 
 int main()
 {
-    for (int i = 0; i < 3; i++)
-    {
-        pairs.push_back({ true,0,0,512,0,0,BaseCharacter(false),BaseCharacter(true),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7}),NeuralNetwork(std::vector<int>{13, 20, 20, 20, 7})});
-        pairs[i].ai1.Randomize();
-        pairs[i].ai2.Randomize();
-    }
     bestAi.Randomize();
 
     auto window = sf::RenderWindow{ { 512u, 128u }, "Falling Blade" };
@@ -275,7 +269,7 @@ int main()
                         frame = 0;
                     }
 
-                    if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f) && ImpactFrame == 0)
+                    if ((globalTime.getElapsedTime().asSeconds() > (1.f / 24.f)||training) && ImpactFrame == 0)
                     {
 
                         if (!first)
@@ -306,7 +300,8 @@ int main()
                                 }
                             }
                         }
-                        if (!player1.dead && !player2.dead && fightingCPU)
+
+                        if (!player1.dead && !player2.dead && (fightingCPU))
                         {
                             player2.Input((test->inputs(player1, player2,frame)));
                         }
@@ -324,6 +319,13 @@ int main()
                             player2.ResetInput();
                             player1.winCount++;
                         }
+
+                        if (player1.closestDist < fabs(player1.position - player2.position))
+                        {
+                            player1.closestDist = fabs(player1.position - player2.position);
+                            player2.closestDist = fabs(player1.position - player2.position);
+                        }
+
 
                         float tempVel1 = player1.velocity;
                         float tempVel2 = player2.velocity;
@@ -645,16 +647,16 @@ int main()
                         switch (selectedDifficulty)
                         {
                         case 0:
-                            test = new HardCodedCPUVariable(1000);
+                            test = new HardCodedCPUVariable(200);
                             break;
                         case 1:
-                            test = new HardCodedCPUVariable(5);
+                            test = new HardCodedCPUVariable(100);
                             break;
                         case 2:
-                            test = new HardCodedCPUVariable(3);
+                            test = new HardCodedCPUVariable(50);
                             break;
                         case 3:
-                            test = new HardCodedCPUVariable(2);
+                            test = new HardCodedCPUVariable(10);
                             break;
                         case 4:
                             test = new HardCodedCPUVariable(1);

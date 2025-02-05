@@ -417,6 +417,10 @@ public:
 					}
 				}
 			}
+			else if(rand() % difficulty == 0)
+			{
+				inputs[4] = 0;
+			}
 			if (self.dodges >= 2 && !dashPast && rand() % difficulty == 0)
 			{
 				dashPast = true;

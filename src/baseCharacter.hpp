@@ -23,6 +23,11 @@ public:
 	sf::Keyboard::Key skill;
 	bool skillIsPressed = false;
 
+	float reward = 0;
+	float fastestVelocity = 0;
+	float closestDist = 0;
+
+
 	bool evenFrame = false;
 
 	int direction;
@@ -231,6 +236,9 @@ public:
 
 	void Reset()
 	{
+		reward = 0;
+		fastestVelocity = 0;
+		closestDist = 0;
 		velocity = 0;
 		dead = false;
 		top = 64;
@@ -258,6 +266,9 @@ public:
 
 	void TrueReset()
 	{
+		reward = 0;
+		fastestVelocity = 0;
+		closestDist = 0;
 		velocity = 0;
 		dead = false;
 		top = 64;
@@ -416,10 +427,10 @@ public:
 
 	bool Tick()
 	{
-		Skill();
+		//Skill();
 		blocking = inputVertical;
 
-		
+
 		/*
 		if (inputAttack)
 		{
@@ -789,6 +800,10 @@ public:
 
 		SetPosition(position + velocity);
 
+		if (fabs(velocity) > fastestVelocity)
+		{
+			fastestVelocity = fabs(velocity);
+		}
 
 		if (exhaustion > 0)
 		{
