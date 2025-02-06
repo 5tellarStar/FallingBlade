@@ -14,7 +14,40 @@ public:
 	}
 	virtual std::vector<double> inputs(BaseCharacter Target, BaseCharacter self, int frame)
 	{
-		return std::vector<double>{0, 0, 0, 0, 0, 0, 0};
+		std::vector<double> out = std::vector<double>{ 0, 0, 0, 0, 0, 0, 0 };
+
+		switch (self.inputVertical)
+		{
+		case -1:
+			out[1] = 1;
+			break;
+		case 0:
+			break;
+		case 1:
+			out[0] = 1;
+			break;
+		}
+		switch (self.inputHorizontal)
+		{
+		case -1:
+			out[3] = 1;
+			break;
+		case 0:
+			break;
+		case 1:
+			out[2] = 1;
+			break;
+		}
+
+		if (self.inputAttack)
+		{
+			out[4] = 1;
+		}
+		if (self.inputDodge)
+		{
+			out[5] = 1;
+		}
+		return out;
 	}
 };
 
@@ -561,8 +594,10 @@ public:
 
 };
 
-class NeuralNetworkCPU : CPU
+class NeuralNetworkCPU : public CPU
 {
+public:
+
 	NeuralNetworkCPU(NeuralNetwork ai)
 	{
 		AI = ai;
