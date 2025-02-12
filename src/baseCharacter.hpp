@@ -379,6 +379,7 @@ public:
 		velocity += force / mass;
 	}
 
+	/*
 	void Skill()
 	{
 		if (inputSkill)
@@ -414,6 +415,7 @@ public:
 			grabFrame++;
 		}
 	}
+	*/
 
 	void ResetInput()
 	{
@@ -429,83 +431,6 @@ public:
 	{
 		//Skill();
 		blocking = inputVertical;
-
-
-		/*
-		if (inputAttack)
-		{
-			if (!isCharging && canAttack)
-			{
-				if (blocked)
-				{
-					attackState = inputVertical;
-					canWalk = false;
-					isAttacking = true;
-					isCharging = false;
-					canGrab = false;
-					AddForce(2 * inputHorizontal);
-					charge = 0;
-					attackFrame = firstActiveAttackFrame;
-				}
-				else
-				{
-					canBlock = false;
-					isCharging = true;
-					canGrab = false;
-					canAttack = false;
-					canTurn = false;
-					sprite.setFillColor(sf::Color::Red);
-				}
-			}
-			if (isCharging && charge < maxCharge)
-			{
-				charge += chargeSpeed;
-			}
-		}
-		else if (isCharging)
-		{
-			attackState = inputVertical;
-			canWalk = false;
-			isAttacking = true;
-			isCharging = false;
-			AddForce(charge * inputHorizontal);
-			charge = 0;
-			attackFrame = 0;
-		}
-
-		if (isAttacking && attackFrame < AttackFrames)
-		{
-			if (attackFrame == AttackCancelableFrames)
-			{
-				canDodge = false;
-			}
-			if (attackFrame == firstActiveAttackFrame)
-			{
-				sprite.setFillColor(sf::Color::Yellow);
-				hitboxActive = true;
-			}
-			attackFrame++;
-		}
-		else if (isAttacking && attackFrame < exhaustion + AttackFrames)
-		{
-			attackFrame++;
-			sprite.setFillColor(sf::Color::Blue);
-		}
-		else if (isAttacking)
-		{
-			sprite.setFillColor(sf::Color::Blue);
-			attackFrame = 0;
-			hitboxActive = 0;
-			isAttacking = false;
-			canAttack = true;
-			canWalk = true;
-			canDodge = true;
-			canBlock = true;
-			canTurn = true;
-			canGrab = true;
-			exhaustion += staminaUse;
-		}
-		*/
 
 		if (dodges <= MaxDodges)
 		{
@@ -552,45 +477,6 @@ public:
 			Stamina[1].setFillColor(sf::Color::Black);
 			Stamina[2].setFillColor(sf::Color::Black);
 		}
-		/*
-		if (canWalk)
-		{
-			if (inputHorizontal == 1)
-			{
-				if (!isCharging)
-				{
-					if (velocity < walkSpeedMax)
-					{
-						velocity += walkSpeed;
-					}
-				}
-				else
-				{
-					if (velocity < walkSpeedMax / 2)
-					{
-						velocity += walkSpeed / 2;
-					}
-				}
-			}
-			if (inputHorizontal == -1)
-			{
-				if (!isCharging)
-				{
-					if (velocity > -walkSpeedMax)
-					{
-						velocity -= walkSpeed;
-					}
-				}
-				else
-				{
-					if (velocity > -walkSpeedMax / 2)
-					{
-						velocity -= walkSpeed / 2;
-					}
-				}
-			}
-		}
-		*/
 
 		if (evenFrame)
 		{

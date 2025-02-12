@@ -4,8 +4,6 @@
 #include <iostream>
 #include <array>
 #include "baseCharacter.hpp"
-#include "neuralNetwork.hpp"
-#include "trainingPair.hpp"
 #include "CPU.hpp"
 #include <string>
 #include <random>
@@ -13,33 +11,26 @@
 
 bool fightingCPU = false;
 int ImpactFrame = 0;
-bool battling = false;
 bool first = true;
 int winsToWin = 3;
-bool training = false;
 double highestReward = -1;
 int frame = 0;
 int selectedButton = 0;
 int selectedDifficulty = 0;
 bool Settings = false;
-std::vector<TrainingPair> pairs;
-NeuralNetwork bestAi(std::vector<int>{13, 20, 20, 20, 7});
 
-std::default_random_engine rnd{ std::random_device{}() };
-std::uniform_real_distribution<double> dist(-0.2, 0.2);
-
+BaseCharacter player1(false);
+BaseCharacter player2(true);
 int main()
 {
-    bestAi.Randomize();
-
+    //Open window
     auto window = sf::RenderWindow{ { 512u, 128u }, "Falling Blade" };
-    BaseCharacter player1(false);
-    BaseCharacter player2(true);
 
-    CPU* test = new HardCodedCPUVariable(2);
+
+
+    CPU* cpu = new HardCodedCPUVariable(200);
 
     sf::Clock globalTime;
-    sf::Clock trainingTime;
 
     sf::Texture titleTexture;
     titleTexture.loadFromFile("title.png");
@@ -265,13 +256,13 @@ int main()
                     {
                         player1.Reset();
                         player2.Reset();
-                        test->Reset();
+                        cpu->Reset();
                         frame = 0;
                     }
 
-                    if ((globalTime.getElapsedTime().asSeconds() > (1.f / 24.f)||training) && ImpactFrame == 0)
+                    if (globalTime.getElapsedTime().asSeconds() > (1.f / 24.f) && ImpactFrame == 0)
                     {
-
+                        /*
                         if (!first)
                         {
                             if (!player1.dead && !player2.dead)
@@ -300,10 +291,11 @@ int main()
                                 }
                             }
                         }
+                        */
 
                         if (!player1.dead && !player2.dead && (fightingCPU))
                         {
-                            player2.Input((test->inputs(player1, player2,frame)));
+                            player2.Input((cpu->inputs(player1, player2,frame)));
                         }
 
                         first = false;
@@ -487,7 +479,7 @@ int main()
                             player2.AddForce(((tempVel1 * player1.direction + player1.attackVelocity) * player1.direction * player1.mass + ((tempVel2 * player2.direction + player2.attackVelocity) * player1.direction) * player2.mass)/2);
                             ImpactFrame = 3;
                         }
-
+                        /*
                         if (!player1.dead && !player2.dead)
                         {
                             frame++;
@@ -532,6 +524,7 @@ int main()
                                 std::to_string(frame) + "|"
                                 ;
                         }
+                        */
 
                         globalTime.restart();
                     }
@@ -616,7 +609,7 @@ int main()
             }
             player1.TrueReset();
             player2.TrueReset();
-            test->Reset();
+            cpu->Reset();
         }
 
         if (selectedButton == 2 && sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
@@ -638,31 +631,31 @@ int main()
             {
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && globalTime.getElapsedTime().asSeconds() > 0.2f)
                 {
-                    if (selectedDifficulty != 7)
+                    if (selectedDifficulty != 5)
                     {
                         selectedDifficulty++;
                         CPULevelsRectSource.left += 74;
                         CPULevelsSprite.setTextureRect(CPULevelsRectSource);
-                        delete test;
+                        delete cpu;
                         switch (selectedDifficulty)
                         {
                         case 0:
-                            test = new HardCodedCPUVariable(200);
+                            cpu = new HardCodedCPUVariable(200);
                             break;
                         case 1:
-                            test = new HardCodedCPUVariable(100);
+                            cpu = new HardCodedCPUVariable(100);
                             break;
                         case 2:
-                            test = new HardCodedCPUVariable(50);
+                            cpu = new HardCodedCPUVariable(50);
                             break;
                         case 3:
-                            test = new HardCodedCPUVariable(10);
+                            cpu = new HardCodedCPUVariable(10);
                             break;
                         case 4:
-                            test = new HardCodedCPUVariable(1);
+                            cpu = new HardCodedCPUVariable(1);
                             break;
                         case 5:
-                            test = new HardCodedCPUImpossiable();
+                            cpu = new HardCodedCPUImpossiable();
                             break;
                         case 6:
                             break;
@@ -679,6 +672,31 @@ int main()
                         selectedDifficulty--;
                         CPULevelsRectSource.left -= 74;
                         CPULevelsSprite.setTextureRect(CPULevelsRectSource);
+                        switch (selectedDifficulty)
+                        {
+                        case 0:
+                            cpu = new HardCodedCPUVariable(200);
+                            break;
+                        case 1:
+                            cpu = new HardCodedCPUVariable(100);
+                            break;
+                        case 2:
+                            cpu = new HardCodedCPUVariable(50);
+                            break;
+                        case 3:
+                            cpu = new HardCodedCPUVariable(10);
+                            break;
+                        case 4:
+                            cpu = new HardCodedCPUVariable(1);
+                            break;
+                        case 5:
+                            cpu = new HardCodedCPUImpossiable();
+                            break;
+                        case 6:
+                            break;
+                        case 7:
+                            break;
+                        }
                     }
                     globalTime.restart();
                 }

@@ -15,3 +15,5 @@ out/build/x64-Debug/CMakeCache.txt
 out/build/x64-Debug/CPackConfig.cmake
 out/build/x64-Debug/CPackSourceConfig.cmake
 out/build/x64-Debug/VSInheritEnvironments.txt
+out/build/x64-Debug/bin/trainingData1.txt
+out/build/x64-Debug/bin/trainingData2.txt

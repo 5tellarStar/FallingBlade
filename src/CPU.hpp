@@ -561,6 +561,7 @@ public:
 
 };
 
+/*
 class NeuralNetworkCPU : CPU
 {
 	NeuralNetworkCPU(NeuralNetwork ai)
@@ -592,3 +593,4 @@ class NeuralNetworkCPU : CPU
 		});
 	}
 };
+*/
