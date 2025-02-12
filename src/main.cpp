@@ -19,18 +19,18 @@ int selectedButton = 0;
 int selectedDifficulty = 0;
 bool Settings = false;
 
-BaseCharacter player1(false);
-BaseCharacter player2(true);
 int main()
 {
     //Open window
     auto window = sf::RenderWindow{ { 512u, 128u }, "Falling Blade" };
 
-
+    BaseCharacter player1(false);
+    BaseCharacter player2(true);
 
     CPU* cpu = new HardCodedCPUVariable(200);
 
     sf::Clock globalTime;
+
 
     sf::Texture titleTexture;
     titleTexture.loadFromFile("title.png");
@@ -125,7 +125,7 @@ int main()
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && globalTime.getElapsedTime().asSeconds() > 0.2f)
         {
-            if (!(selectedButton == 2|| (Settings && selectedButton == 0)))
+            if (!(selectedButton == 2 || (Settings && selectedButton == 0)))
             {
                 selectedButton++;
             }
