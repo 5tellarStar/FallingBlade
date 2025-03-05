@@ -153,11 +153,11 @@
 	[
 		{
 			"backtrace" : 2,
-			"id" : "sfml-window::@5730451e331e3690ae65"
+			"id" : "sfml-system::@8cb1db2982443611e568"
 		},
 		{
 			"backtrace" : 2,
-			"id" : "sfml-system::@8cb1db2982443611e568"
+			"id" : "sfml-window::@5730451e331e3690ae65"
 		},
 		{
 			"backtrace" : 2,
@@ -174,7 +174,7 @@
 				"role" : "flags"
 			},
 			{
-				"fragment" : "/machine:x64 /INCREMENTAL:NO /subsystem:windows",
+				"fragment" : "/machine:x64 /INCREMENTAL:NO /subsystem:console",
 				"role" : "flags"
 			},
 			{
