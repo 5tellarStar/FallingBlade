@@ -18,7 +18,7 @@ Contorls:
 	Enter to Continue to next round
 
 You win a round by knocking of the opponent of the platform
-first to three rounds wins the game
+first to two rounds wins the game
 
 The CPU level determines how likly the CPU is to do things each frame
 Baby 1/200

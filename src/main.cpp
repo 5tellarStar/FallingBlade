@@ -12,7 +12,7 @@
 bool fightingCPU = false;
 int ImpactFrame = 0;
 bool first = true;
-int winsToWin = 3;
+int winsToWin = 2;
 double highestReward = -1;
 int frame = 0;
 int selectedButton = 0;
@@ -84,6 +84,18 @@ int main()
     sf::Sprite platformSprite;
     platformSprite.setTexture(platformTexture);
     platformSprite.setPosition(sf::Vector2f(64, 96));
+
+    sf::Texture blueWinsTexture;
+    blueWinsTexture.loadFromFile("blueWins.png");
+    sf::Sprite blueWinsSprite;
+    blueWinsSprite.setTexture(blueWinsTexture);
+    blueWinsSprite.setPosition(sf::Vector2f(222, 64));
+
+    sf::Texture redWinsTexture;
+    redWinsTexture.loadFromFile("redWins.png");
+    sf::Sprite redWinsSprite;
+    redWinsSprite.setTexture(redWinsTexture);
+    redWinsSprite.setPosition(sf::Vector2f(224, 64));
 
     sf::View view = window.getDefaultView();
     view.setCenter(view.getCenter().x, -128);
@@ -165,7 +177,7 @@ int main()
                 }
                 window.display();
             }
-            while (((player1.winCount < winsToWin && player2.winCount < winsToWin) || !(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && player1.currentLegsFrame == 0 && player1.currentUpperBodyFrame == 0 && player2.currentLegsFrame == 0 && player2.currentUpperBodyFrame == 0)))
+            while (((player1.winCount < winsToWin && player2.winCount < winsToWin) ||  !(player1.currentLegsFrame == 0 && player1.currentUpperBodyFrame == 0 && player2.currentLegsFrame == 0 && player2.currentUpperBodyFrame == 0)))
             {
                 window.clear(sf::Color(51, 173, 255, 0));
                 window.draw(platformSprite);
@@ -578,6 +590,55 @@ int main()
                     }
                 window.display();
             }
+
+            if (player1.winCount = winsToWin) 
+            {
+                while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+                {
+                    window.clear(sf::Color(51, 173, 255, 0));
+                    window.draw(blueWinsSprite);
+                    window.draw(platformSprite);
+                    window.draw(player1.sprite);
+                    window.draw(player1.legsSprite);
+                    window.draw(player1.upperBodySprite);
+                    window.draw(player1.upperBodyColorSprite);
+                    window.draw(player2.sprite);
+                    window.draw(player2.legsSprite);
+                    window.draw(player2.upperBodySprite);
+                    window.draw(player2.upperBodyColorSprite);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        window.draw(player1.Stamina[i]);
+                        window.draw(player2.Stamina[i]);
+                    }
+                    window.display();
+                }
+            }
+            else
+            {
+                while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+                {
+                    window.clear(sf::Color(51, 173, 255, 0));
+                    window.draw(redWinsSprite);
+                    window.draw(platformSprite);
+                    window.draw(player1.sprite);
+                    window.draw(player1.legsSprite);
+                    window.draw(player1.upperBodySprite);
+                    window.draw(player1.upperBodyColorSprite);
+                    window.draw(player2.sprite);
+                    window.draw(player2.legsSprite);
+                    window.draw(player2.upperBodySprite);
+                    window.draw(player2.upperBodyColorSprite);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        window.draw(player1.Stamina[i]);
+                        window.draw(player2.Stamina[i]);
+                    }
+                    window.display();
+                }
+            }
+
+
             window.clear(sf::Color(51, 173, 255, 0));
             while (view.getCenter().y != -128)
             {
