@@ -20,7 +20,7 @@ Contorls:
 You win a round by knocking of the opponent of the platform
 first to two rounds wins the game
 
-The CPU level determines how likly the CPU is to do things each frame
+The CPU level determines how likely the CPU is to do things each frame
 Baby 1/200
 Easy 1/100
 Normal 1/50
