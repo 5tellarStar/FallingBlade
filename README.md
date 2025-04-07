@@ -17,8 +17,9 @@ Contorls:
 	  Numpad 8 to Dash
 	Enter to Continue to next round
 
+Attacks can be charged
 You win a round by knocking of the opponent of the platform
-first to two rounds wins the game
+First to two rounds wins the game
 
 The CPU level determines how likely the CPU is to do things each frame
 Baby 1/200
