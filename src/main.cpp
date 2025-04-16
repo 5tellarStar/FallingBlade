@@ -104,12 +104,14 @@ int main()
     sf::RectangleShape background(sf::Vector2f(512, 128));
     background.setFillColor(sf::Color::White);
 
+    /*
     std::ofstream trainingData1("trainingData1.txt");
     std::ofstream trainingData2("trainingData2.txt");
     std::string dataLine1;
     std::string oldDataLine1;
     std::string dataLine2;
     std::string oldDataLine2;
+    */
     
     while (window.isOpen())
     {
@@ -591,12 +593,12 @@ int main()
                 window.display();
             }
 
-            if (player1.winCount = winsToWin) 
+            if (player2.winCount == winsToWin) 
             {
                 while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
                 {
                     window.clear(sf::Color(51, 173, 255, 0));
-                    window.draw(blueWinsSprite);
+                    window.draw(redWinsSprite);
                     window.draw(platformSprite);
                     window.draw(player1.sprite);
                     window.draw(player1.legsSprite);
@@ -619,7 +621,7 @@ int main()
                 while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
                 {
                     window.clear(sf::Color(51, 173, 255, 0));
-                    window.draw(redWinsSprite);
+                    window.draw(blueWinsSprite);
                     window.draw(platformSprite);
                     window.draw(player1.sprite);
                     window.draw(player1.legsSprite);
@@ -788,5 +790,5 @@ int main()
         window.draw(selectorSprite);
         window.display();
     }
-    trainingData2.close();
+    //trainingData2.close();
 }
